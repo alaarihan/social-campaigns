@@ -1,0 +1,40 @@
+{
+  "name": "social-campaigns",
+  "version": "1.0.0",
+  "description": "Social Compaigns",
+  "main": "index.js",
+  "scripts": {
+    "dev": "dotenv -- nodemon --inspect src/index.js --exec babel-node",
+    "build": "babel src -d lib",
+    "start": "node -r dotenv/config lib/index.js",
+    "lint": "eslint --ext .js --ignore-path .gitignore .",
+    "fix": "eslint --ext .js --ignore-path .gitignore . --fix",
+    "heroku-postbuild": "npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "clone": "^2.1.2",
+    "dotenv": "^8.0.0",
+    "graphql-request": "^1.8.2",
+    "puppeteer": "^1.17.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "acorn": "^6.1.1",
+    "dotenv-cli": "^2.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
+  }
+}
