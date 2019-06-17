@@ -1,142 +1,54 @@
 require('dotenv').config()
-const os = require('os')
 const puppeteer = require('puppeteer')
-const { GraphQLClient } = require('graphql-request')
-import gqlQueries from './gqlQueries'
+import { log } from './apiQueries'
+import { login, clickAds, removeAntibot, clickPuzzleMap } from './actions'
 
-const client = new GraphQLClient(process.env.HASURA_URI, {
-  headers: {
-    'x-hasura-admin-secret': process.env.HASURA_SECRET
-  }
-})
-
-const hostName = os.hostname()
-var account = null
 async function mainFunction() {
-  account = await getAccount()
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  })
-  const page = await browser.newPage()
-  await page.goto('https://google.com')
-  await page.screenshot({ path: 'example.png' })
-  await updateLastActivity(account.id);
-  await browser.close()
+	const browser = await puppeteer.launch({
+		headless: false,
+		defaultViewport: null,
+		args: ['--no-sandbox', '--disable-setuid-sandbox']
+	})
+	let page = await login(browser)
+	if(!page) return false
+	log('Going to earn page')
+	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+	await page.waitFor(2000)
+	if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
+		await clickPuzzleMap(page)
+		await page.waitFor(2000)
+		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+	}
+	await page
+		.waitForSelector('.earn_pages_button', { timeout: 5000 })
+		.catch(async error => {
+			log('Click load more button')
+			await page.click('#load-more-links')
+		})
+	await page.waitFor(2000)
+	await removeAntibot(page)
+	await page.waitFor(2000)
+	for (let index = 0; index < 10; index++) {
+		await clickAds(page, browser)
+		log('Click load more button')
+		await page.click('#load-more-links').catch(async error => {
+			if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
+				await clickPuzzleMap(page)
+				await page.waitFor(2000)
+				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+			} else {
+				log(error.message, 'ERROR')
+			}
+		})
+		await page.waitFor(2000)
+	}
+
+	await browser.close()
 }
-; (async () => {
-  mainFunction()
+;(async () => {
+	try {
+		mainFunction()
+	} catch (error) {
+		log(error.message, 'ERROR')
+	}
 })()
-
-// Get an offline account
-async function getAccount() {
-  await updateInactiveAccountsState()
-  let variables = {
-    order_by: { lastActivity: 'asc' },
-    where: { status: { _eq: 'OFFLINE' } }
-  }
-
-  return await client
-    .request(gqlQueries.getAccounts, variables)
-    .then(function (data) {
-      console.log(data)
-      if (data.account.length < 1) {
-        return false
-      }
-      changeAccountStatus(data.account[0].id, 'ONLINE')
-      return data.account[0]
-    })
-    .catch(function (error) {
-      log("Couldn't get accounts ", error, 'ERROR')
-    })
-}
-
-async function updateInactiveAccountsState() {
-  // Set online accounts to offline status after 4 inactive minutes
-  let lastActivity = new Date();
-  lastActivity.setMinutes(lastActivity.getMinutes() - 4);
-  let variables = {
-    order_by: { lastActivity: 'asc' },
-    where: { status: { _eq: 'ONLINE' }, lastActivity: { _lt: lastActivity } }
-  }
-  await client.request(gqlQueries.getAccounts, variables).then(function (data) {
-    console.log(data)
-    for (var i = 0, len = data.account.length; i < len; i++) {
-      changeAccountStatus(data.account[i].id, "OFFLINE");
-    }
-  }).catch(function (error) {
-    console.log(error)
-    log("Couldn't get onilne accounts to check last activity ", error, "ERROR");
-  });
-
-  // Set disabled accounts to offline status after 6 inactive hours
-  await lastActivity.setHours(lastActivity.getHours() - 6);
-  variables = await {
-    order_by: { lastActivity: 'asc' },
-    where: { status: { _eq: 'DISABLED' }, lastActivity: { _lt: lastActivity } }
-  }
-  await client.request(gqlQueries.getAccounts, variables).then(function (data) {
-    for (var i = 0, len = data.account.length; i < len; i++) {
-      changeAccountStatus(data.account[i].id, "OFFLINE");
-    }
-  }).catch(function (error) {
-    log("Couldn't get disabled accounts to check last activity ", error, "ERROR");
-  });
-}
-
-async function changeAccountStatus(id, status) {
-  let variables = {
-    _set: { status },
-    where: { id: { _eq: id } }
-  }
-
-  await client.request(gqlQueries.updateAccount, variables).then(function (data) {
-    log(`Account ${data.update_account.returning[0].username} status changed to ${status}`);
-  }).catch(function (error) {
-    console.log(error)
-    // log("Couldn't change account status ", error, "ERROR");
-  });
-}
-
-async function updateLastActivity(id){
-  let now = new Date();
-  let variables = {
-    _set: { lastActivity: now },
-    where: { id: { _eq: id } }
-  }
-
-  await client.request(gqlQueries.updateAccount, variables).then(function(data) {
-      log(`Account ${data.update_account.returning[0].username} logging last activity ${now}`);
-  }).catch(function(error) {
-      log("Couldn't change account status ", error, "ERROR");
-  });
-}
-
-function log(message, type) {
-  if (!type) {
-    type = 'INFO';
-  }
-  console.log(message);
-  let variables = {}
-
-  if (!account || !account.id) {
-    variables = {
-      message,
-      type,
-      hostName
-    }
-  } else {
-    variables = {
-      message,
-      type,
-      hostName,
-      account_id: account.id
-    }
-  }
-
-  client.request(gqlQueries.createLog, variables).then(function (data) {
-
-  }).catch(function (error) {
-    console.log("Couldn't create Log " + error);
-  });
-}
