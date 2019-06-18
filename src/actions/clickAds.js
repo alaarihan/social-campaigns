@@ -36,7 +36,7 @@ async function clickAds(page, browser) {
 			} else {
 				await iframe2.waitFor(counterNumber * 1000)
 				const puzzleIframe = await iframe.childFrames()[1]
-				await clickPuzzleMap(puzzleIframe)
+				await clickPuzzleMap(puzzleIframe, "Video window")
 				await page.waitFor(2000)
 			}
 		})
