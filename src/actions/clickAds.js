@@ -44,6 +44,7 @@ async function clickAds(page, browser) {
 				log('The video is not playing!')
 			} else {
 				await iframe2.waitFor(counterNumber * 1000)
+				await iframe2.waitForSelector('iframe')
 				const puzzleIframe = await iframe.childFrames()[1]
 				await clickPuzzleMap(puzzleIframe)
 				await page.waitFor(2000)
