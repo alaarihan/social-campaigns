@@ -4,7 +4,7 @@ import { gqlClient } from '../utils'
 // Get an offline account
 const getAccount = async function() {
 	let variables = {
-		order_by: { lastActivity: 'asc' },
+		order_by: { lastActivity: 'desc' },
 		where: { status: { _eq: 'OFFLINE' } }
 	}
 	return await gqlClient
