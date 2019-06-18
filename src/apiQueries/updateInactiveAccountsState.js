@@ -47,7 +47,7 @@ const updateInactiveAccountsState = async function() {
 				'ERROR'
 			)
 		})
-		// Set disabled accounts to offline status after 6 inactive hours
+	// Set disabled accounts to offline status after 6 inactive hours
 	await lastActivity.setHours(lastActivity.getHours() - 18)
 	variables = await {
 		order_by: { lastActivity: 'asc' },

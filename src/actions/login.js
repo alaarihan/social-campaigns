@@ -21,7 +21,9 @@ async function login(browser) {
 	await page.keyboard.down('Tab')
 	await page.keyboard.type(account.password)
 	await page.click('a[onclick="LoginFunctions();"]')
-	await page.waitForSelector('a[href="https://www.like4like.org/user/"]', { timeout: 7000 })
+	await page.waitForSelector('a[href="https://www.like4like.org/user/"]', {
+		timeout: 7000
+	})
 	if (page.url() === 'https://www.like4like.org/') {
 		log('Successfully logged in to Like4Like')
 	} else {
@@ -30,7 +32,7 @@ async function login(browser) {
 			() => document.querySelector('#h3').innerText
 		)
 		let accountStatus = 'BLOCKED'
-		if(errorText.indexOf('deactivated') !== -1){
+		if (errorText.indexOf('deactivated') !== -1) {
 			accountStatus = 'DEACTIVATED'
 		}
 		await changeAccountStatus(account.id, accountStatus)
