@@ -17,7 +17,7 @@ app.use('/run', function(req, res, next) {
 	if (!key) return next(ExpressError(400, 'api key required'))
 
 	// key is invalid
-	if (apiKey !== process.env.API_KEY) return next(ExpressError(401, 'invalid api key'))
+	if (key !== process.env.API_KEY) return next(ExpressError(401, 'invalid api key'))
 
 	// all good, store req.key for route access
 	req.key = key
