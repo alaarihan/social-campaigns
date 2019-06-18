@@ -10,10 +10,6 @@ async function clickAds(page, browser) {
 		await page.click('.earn_pages_button:first-child')
 		await page.waitFor(2000)
 		const pages = await browser.pages()
-		// console.log(pages.length)
-		// console.log(pages[2])
-		// await page.waitForNavigation()
-		// AdsElements[index].click()
 		await pages[1].waitForSelector('iframe')
 		const iframe = await pages[1].frames()[1]
 		await iframe.waitForSelector('#player')
@@ -25,11 +21,6 @@ async function clickAds(page, browser) {
 		)
 		console.log(counterNumber)
 		const iframe2 = await iframe.childFrames()[0]
-		//const iframe1 = await iframe.childFrames();
-		// console.log(iframe)
-
-		// await page.waitFor(1000)
-		// const iframe2 = await iframe.frames()[0];
 		await iframe2.waitForSelector('.ytp-large-play-button')
 		await iframe2.click('.ytp-large-play-button')
 		await iframe2.waitFor(3000).then(async () => {
@@ -44,9 +35,10 @@ async function clickAds(page, browser) {
 				log('The video is not playing!')
 			} else {
 				await iframe2.waitFor(counterNumber * 1000)
-				await iframe2.waitForSelector('iframe')
 				const puzzleIframe = await iframe.childFrames()[1]
-				await clickPuzzleMap(puzzleIframe)
+				if(puzzleIframe){
+					await clickPuzzleMap(puzzleIframe)
+				}
 				await page.waitFor(2000)
 			}
 		})
