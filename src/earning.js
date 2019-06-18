@@ -1,6 +1,12 @@
 const puppeteer = require('puppeteer')
-import { log } from './apiQueries'
-import { login, clickAds, removeAntibot, clickPuzzleMap, updateCredit } from './actions'
+const log = require('./apiQueries/log')
+const {
+	login,
+	clickAds,
+	removeAntibot,
+	clickPuzzleMap,
+	updateCredit
+} = require('./actions')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
@@ -20,14 +26,18 @@ const startEarning = async function() {
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	}
 	await page
-		.waitForSelector('.earn_pages_button', { timeout: 5000 })
+		.waitForSelector('.earn_pages_button', { timeout: 7000 })
 		.catch(async error => {
 			log('Click load more button')
-			await page.click('#load-more-links')
+			await page.click('#load-more-links').catch(async error => {
+				log("Couldn't click load more button!", 'ERROR')
+				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+				await page.waitFor(2000)
+			})
 		})
 	await page.waitFor(2000)
-    await removeAntibot(page)
-    await updateCredit(page)
+	await removeAntibot(page)
+	await updateCredit(page)
 	await page.waitFor(2000)
 	for (let index = 0; index < 10; index++) {
 		await clickAds(page, browser)
@@ -42,9 +52,9 @@ const startEarning = async function() {
 			}
 		})
 		await page.waitFor(2000)
-    }
-    await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-    await updateCredit(page)
+	}
+	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+	await updateCredit(page)
 
 	await browser.close()
 }

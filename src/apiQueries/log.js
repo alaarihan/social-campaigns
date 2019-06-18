@@ -1,7 +1,7 @@
 const os = require('os')
-import { gqlClient } from '../utils'
-import { createLog } from '../gqlQueries'
-import { getCurrentAccount } from '../setAccount'
+const { gqlClient } = require('../utils')
+const { createLog } = require('../gqlQueries')
+const { getCurrentAccount } = require('../setAccount')
 
 const hostName = os.hostname()
 

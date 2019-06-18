@@ -1,6 +1,6 @@
 import { log } from '../apiQueries'
 const clickPuzzleMap = async function(page) {
-	if (!page) return log('No Puzzle to click', 'ERROR');
+	if (!page) return log('No Puzzle to click', 'ERROR')
 	log(`Click Puzzle in ${page.url()}`)
 	await page
 		.evaluate(function() {

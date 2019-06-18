@@ -1,6 +1,6 @@
-import { getCurrentAccount } from '../setAccount'
+const { getCurrentAccount } = require('../setAccount')
 
-import { log, updateLastActivity } from '../apiQueries'
+const { log, updateLastActivity } = require('../apiQueries')
 const clickPuzzleMap = require('./clickPuzzleMap')
 
 async function clickAds(page, browser) {

@@ -3,7 +3,6 @@ import { gqlClient } from '../utils'
 const log = require('./log')
 
 const updateAccountCredit = async function(id, credit) {
-	let now = new Date()
 	let variables = {
 		_set: { credit },
 		where: { id: { _eq: id } }

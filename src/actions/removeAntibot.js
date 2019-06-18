@@ -1,3 +1,5 @@
+const log = require('../apiQueries/log')
+
 const removeAntibot = async function(page) {
 	await page
 		.evaluate(function() {

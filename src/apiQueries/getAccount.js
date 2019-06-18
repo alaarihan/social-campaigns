@@ -1,6 +1,6 @@
-import { getAccounts } from '../gqlQueries'
-import { gqlClient } from '../utils'
-
+const { getAccounts } = require('../gqlQueries')
+const { gqlClient } = require('../utils')
+const log = require('../apiQueries/log')
 // Get an offline account
 const getAccount = async function() {
 	let variables = {

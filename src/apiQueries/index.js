@@ -1,9 +1,9 @@
-import getAccount from './getAccount'
-import changeAccountStatus from './changeAccountStatus'
-import updateInactiveAccountsState from './updateInactiveAccountsState'
-import updateLastActivity from './updateLastActivity'
-import updateAccountCredit from './updateAccountCredit'
-import log from './log'
+const getAccount = require('./getAccount')
+const changeAccountStatus = require('./changeAccountStatus')
+const updateInactiveAccountsState = require('./updateInactiveAccountsState')
+const updateLastActivity = require('./updateLastActivity')
+const updateAccountCredit = require('./updateAccountCredit')
+const log = require('./log')
 
 module.exports = {
 	getAccount,

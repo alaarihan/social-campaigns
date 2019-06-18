@@ -21,7 +21,7 @@ const updateInactiveAccountsState = async function() {
 		})
 		.catch(function(error) {
 			log(
-				"Couldn't get onilne accounts to check last activity "+ error.message,
+				"Couldn't get onilne accounts to check last activity " + error.message,
 				'ERROR'
 			)
 		})

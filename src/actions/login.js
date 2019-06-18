@@ -1,10 +1,11 @@
-import { getNewAccount } from '../setAccount'
-import {
+const { getNewAccount } = require('../setAccount')
+
+const {
 	updateLastActivity,
 	updateInactiveAccountsState,
 	changeAccountStatus,
 	log
-} from '../apiQueries'
+} = require('../apiQueries')
 async function login(browser) {
 	await updateInactiveAccountsState()
 	const account = await getNewAccount()

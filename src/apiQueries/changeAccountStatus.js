@@ -16,7 +16,7 @@ const changeAccountStatus = async function(id, status) {
 			)
 		})
 		.catch(function(error) {
-			log("Couldn't change account status "+ error.message, 'ERROR')
+			log("Couldn't change account status " + error.message, 'ERROR')
 		})
 }
 

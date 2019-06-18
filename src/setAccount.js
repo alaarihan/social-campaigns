@@ -1,4 +1,4 @@
-import getAccount from './apiQueries/getAccount'
+const getAccount = require('./apiQueries/getAccount')
 
 var account = null
 
