@@ -2,9 +2,10 @@ const puppeteer = require('puppeteer')
 import { log } from './apiQueries'
 import { login, clickAds, removeAntibot, clickPuzzleMap } from './actions'
 
+var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
 	const browser = await puppeteer.launch({
-		headless: false,
+		headless: runMode,
 		defaultViewport: null,
 		args: ['--no-sandbox', '--disable-setuid-sandbox']
 	})
