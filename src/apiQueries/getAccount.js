@@ -17,7 +17,7 @@ const getAccount = async function() {
 			return data.account[0]
 		})
 		.catch(function(error) {
-			// log("Couldn't get accounts ", error, 'ERROR')
+			log("Couldn't get accounts " + error.message, 'ERROR')
 		})
 }
 

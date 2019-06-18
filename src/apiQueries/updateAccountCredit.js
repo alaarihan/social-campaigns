@@ -2,9 +2,10 @@ import { updateAccount } from '../gqlQueries'
 import { gqlClient } from '../utils'
 const log = require('./log')
 
-const changeAccountStatus = async function(id, status) {
+const updateAccountCredit = async function(id, credit) {
+	let now = new Date()
 	let variables = {
-		_set: { status },
+		_set: { credit },
 		where: { id: { _eq: id } }
 	}
 
@@ -12,12 +13,12 @@ const changeAccountStatus = async function(id, status) {
 		.request(updateAccount, variables)
 		.then(function(data) {
 			log(
-				`Account ${data.update_account.returning[0].username} status changed to ${status}`
+				`Update Account ${data.update_account.returning[0].username} credit to ${credit}`
 			)
 		})
 		.catch(function(error) {
-			log("Couldn't change account status "+ error.message, 'ERROR')
+			log("Couldn't update account credit ", 'ERROR')
 		})
 }
 
-module.exports = changeAccountStatus
+module.exports = updateAccountCredit

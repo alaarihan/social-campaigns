@@ -17,7 +17,7 @@ const updateLastActivity = async function(id) {
 			)
 		})
 		.catch(function(error) {
-			log("Couldn't change account status ", error, 'ERROR')
+			log("Couldn't change account status "+ error.message, 'ERROR')
 		})
 }
 

@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 import { log } from './apiQueries'
-import { login, clickAds, removeAntibot, clickPuzzleMap } from './actions'
+import { login, clickAds, removeAntibot, clickPuzzleMap, updateCredit } from './actions'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
@@ -26,7 +26,8 @@ const startEarning = async function() {
 			await page.click('#load-more-links')
 		})
 	await page.waitFor(2000)
-	await removeAntibot(page)
+    await removeAntibot(page)
+    await updateCredit(page)
 	await page.waitFor(2000)
 	for (let index = 0; index < 10; index++) {
 		await clickAds(page, browser)
@@ -41,7 +42,9 @@ const startEarning = async function() {
 			}
 		})
 		await page.waitFor(2000)
-	}
+    }
+    await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+    await updateCredit(page)
 
 	await browser.close()
 }

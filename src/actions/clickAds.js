@@ -1,7 +1,7 @@
 import { getCurrentAccount } from '../setAccount'
 
 import { log, updateLastActivity } from '../apiQueries'
-const clickPuzzleMap = require('../actions/clickPuzzleMap')
+const clickPuzzleMap = require('./clickPuzzleMap')
 
 async function clickAds(page, browser) {
 	const account = await getCurrentAccount()
@@ -40,8 +40,6 @@ async function clickAds(page, browser) {
 				await page.waitFor(2000)
 			}
 		})
-
-		// await iframe.waitForSelector()
 		await pages[1].close()
 		await page.waitFor(3000)
 		updateLastActivity(account.id)
