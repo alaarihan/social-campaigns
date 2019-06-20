@@ -1,6 +1,8 @@
 require('dotenv').config()
 const express = require('express')
+const bodyParser = require('body-parser')
 const startEarning = require('./earning')
+const startCampaign = require('./startCampaign')
 
 const app = express()
 
@@ -10,8 +12,10 @@ function ExpressError(status, msg) {
 	return err
 }
 
+app.use(bodyParser.json())
+
 app.use('/run', function(req, res, next) {
-	var key = req.query['api-key']
+	var key = req.query['api-key'] || req.headers['api-key']
 
 	// key isn't present
 	if (!key) return next(ExpressError(400, 'api key required'))
@@ -28,6 +32,20 @@ app.use('/run', function(req, res, next) {
 app.get('/run/earning', function(req, res, next) {
 	startEarning()
 	res.send('Running')
+})
+
+app.post('/run/startCampaign', async function(req, res, next) {
+	console.log(req.body)
+	if (
+		!req.body.event ||
+		!req.body.event.data ||
+		!req.body.event.data.new ||
+		!req.body.event.data.new.id
+	)
+		return next(ExpressError(400, 'Campaign info is required!'))
+	const campaign = req.body.event.data.new
+	const createdCampaigns = await startCampaign(campaign)
+	res.send(createdCampaigns)
 })
 
 app.listen({ port: process.env.PORT || 4001 }, () =>

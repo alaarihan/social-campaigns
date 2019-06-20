@@ -6,6 +6,7 @@ const gqlQueries = {
       password
       status
       lastActivity
+      credit
     }
   }`,
 	updateAccount: `mutation update_account($_set: account_set_input, $where: account_bool_exp!){
@@ -19,6 +20,24 @@ const gqlQueries = {
 	createLog: `mutation insert_log($message: String, $type: String, $hostName: String $account_id: Int){
     insert_log(objects: { message: $message, type: $type, hostName: $hostName account_id: $account_id }) {
       affected_rows
+    }
+  }`,
+	createLikeCampaign: `mutation insert_likeCampaign($objects: [likeCampaign_insert_input!]!){
+    insert_likeCampaign(objects: $objects) {
+      affected_rows
+      returning{
+        id
+        name
+        limit
+        status
+      }
+    }
+  }`,
+	updateCampaign: `mutation update_campaign($_set: campaign_set_input, $where: campaign_bool_exp!){
+    update_campaign(_set: $_set, where: $where) {
+        returning{
+        id
+        }
     }
   }`
 }
