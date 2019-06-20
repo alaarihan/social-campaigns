@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer')
 const log = require('./apiQueries/log')
+const updateInactiveAccountsState = require('./apiQueries/updateInactiveAccountsState')
+const changeAccountStatus = require('./apiQueries/changeAccountStatus')
 const {
 	login,
 	clickAds,
@@ -7,6 +9,7 @@ const {
 	clickPuzzleMap,
 	updateCredit
 } = require('./actions')
+const { getCurrentAccount } = require('./setAccount')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
@@ -15,8 +18,27 @@ const startEarning = async function() {
 		defaultViewport: null,
 		args: ['--no-sandbox', '--disable-setuid-sandbox']
 	})
-	let page = await login(browser)
-	if (!page) return false
+	await updateInactiveAccountsState()
+	let page = await browser.pages()
+	page = page[0]
+	if (!page) {
+		await browser.close()
+		return false
+	}
+	await login(page)
+	var account = await getCurrentAccount()
+	if(!account){
+		log('Waiting for an available offline account')
+		await page.waitFor(240000)
+		await updateInactiveAccountsState()
+		await login(page)
+		var account = await getCurrentAccount()
+	}
+	if(!account){
+		log('Done waiting but still no offline accounts! so abort!')
+		await browser.close()
+		return false
+	}
 	log('Going to earn page')
 	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	await page.waitFor(2000)
@@ -24,6 +46,11 @@ const startEarning = async function() {
 		await clickPuzzleMap(page)
 		await page.waitFor(2000)
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+	}else if(page.url() === 'https://www.like4like.org/login/verify-email.php'){
+		log('Need email verification!')
+		await changeAccountStatus(account.id, 'NEED_EMAIL_VERIFY')
+		await browser.close()
+		return false
 	}
 	await page
 		.waitForSelector('.earn_pages_button', { timeout: 7000 })
@@ -57,6 +84,7 @@ const startEarning = async function() {
 	await updateCredit(page)
 
 	await browser.close()
+	log('Done!')
 }
 
 module.exports = startEarning

@@ -1,7 +1,7 @@
 import { log } from '../apiQueries'
 const clickPuzzleMap = async function(page, where) {
 	if (!page) return log('No Puzzle to click', 'ERROR')
-	if(!where){
+	if (!where) {
 		where = page.url()
 	}
 	log(`Click Puzzle in ${where}`)

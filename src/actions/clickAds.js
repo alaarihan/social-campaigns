@@ -20,7 +20,16 @@ async function clickAds(page, browser) {
 			counterText.substring(counterText.indexOf('/') + 2).slice(0, -8)
 		)
 		console.log(counterNumber)
+		await iframe
+			.waitForSelector('iframe', { timeout: 10000 })
+			.catch(async () => {
+				log("Couldn't find youtube frame!", 'ERROR')
+				await pages[1].close()
+			})
 		const iframe2 = await iframe.childFrames()[0]
+		if (!iframe2) {
+			break
+		}
 		await iframe2.waitForSelector('.ytp-large-play-button')
 		await iframe2.click('.ytp-large-play-button')
 		await iframe2.waitFor(3000).then(async () => {
@@ -36,7 +45,7 @@ async function clickAds(page, browser) {
 			} else {
 				await iframe2.waitFor(counterNumber * 1000)
 				const puzzleIframe = await iframe.childFrames()[1]
-				await clickPuzzleMap(puzzleIframe, "Video window")
+				await clickPuzzleMap(puzzleIframe, 'video window')
 				await page.waitFor(2000)
 			}
 		})
