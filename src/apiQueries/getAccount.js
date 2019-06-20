@@ -1,6 +1,6 @@
 const { getAccounts } = require('../gqlQueries')
 const { gqlClient } = require('../utils')
-const log = require('../apiQueries/log')
+const log = require('./log')
 // Get an offline account
 const getAccount = async function() {
 	let variables = {

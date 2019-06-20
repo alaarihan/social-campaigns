@@ -27,14 +27,14 @@ const startEarning = async function() {
 	}
 	await login(page)
 	var account = await getCurrentAccount()
-	if(!account){
+	if (!account) {
 		log('Waiting for an available offline account')
 		await page.waitFor(240000)
 		await updateInactiveAccountsState()
 		await login(page)
 		var account = await getCurrentAccount()
 	}
-	if(!account){
+	if (!account) {
 		log('Done waiting but still no offline accounts! so abort!')
 		await browser.close()
 		return false
@@ -46,7 +46,9 @@ const startEarning = async function() {
 		await clickPuzzleMap(page)
 		await page.waitFor(2000)
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-	}else if(page.url() === 'https://www.like4like.org/login/verify-email.php'){
+	} else if (
+		page.url() === 'https://www.like4like.org/login/verify-email.php'
+	) {
 		log('Need email verification!')
 		await changeAccountStatus(account.id, 'NEED_EMAIL_VERIFY')
 		await browser.close()
@@ -84,6 +86,7 @@ const startEarning = async function() {
 	await updateCredit(page)
 
 	await browser.close()
+	await changeAccountStatus(account.id, 'OFFLINE')
 	log('Done!')
 }
 

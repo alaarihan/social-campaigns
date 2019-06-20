@@ -6,6 +6,11 @@ const clickPuzzleMap = require('./clickPuzzleMap')
 async function clickAds(page, browser) {
 	const account = await getCurrentAccount()
 	const AdsElements = await page.$$('.earn_pages_button')
+	if (AdsElements.length < 1) {
+		log('No ads to click')
+		return false
+	}
+	log(`Found ${AdsElements.length} ads`)
 	for (let index = 0; index < AdsElements.length; index++) {
 		await page.click('.earn_pages_button:first-child')
 		await page.waitFor(2000)
