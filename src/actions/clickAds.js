@@ -1,5 +1,4 @@
 const { getCurrentAccount } = require('../setAccount')
-
 const { log, updateLastActivity } = require('../apiQueries')
 const clickPuzzleMap = require('./clickPuzzleMap')
 

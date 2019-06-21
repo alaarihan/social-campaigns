@@ -7,11 +7,6 @@ const { login, clickPuzzleMap } = require('./actions')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startCampaign = async function(campaign) {
-	// campaign = {
-	// 	id: 1,
-	// 	link: 'https://www.youtube.com/watch?v=cRFRByeduRg',
-	// 	target: 2
-	// }
 	const accounts = await getAccounts()
 	if (accounts.length < 1) return false
 	const browser = await puppeteer.launch({
