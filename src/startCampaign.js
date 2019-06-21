@@ -6,23 +6,24 @@ const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const { login, clickPuzzleMap } = require('./actions')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
+var browser = null
 const startCampaign = async function(campaign) {
 	const accounts = await getAccounts()
 	if (accounts.length < 1) return false
-	const browser = await puppeteer.launch({
-		headless: runMode,
-		defaultViewport: null,
-		args: ['--no-sandbox', '--disable-setuid-sandbox']
-	})
-	let page = await browser.pages()
-	page = page[0]
-	if (!page) {
-		await browser.close()
-		return false
-	}
 	var totalCampaingnsTarget = 0
 	var createdLikeCampaigns = []
 	for (let index = 0; index < accounts.length; index++) {
+		browser = await puppeteer.launch({
+			headless: runMode,
+			defaultViewport: null,
+			args: ['--no-sandbox']
+		})
+		let page = await browser.pages()
+		page = page[0]
+		if (!page) {
+			await browser.close()
+			return false
+		}
 		await login(page, accounts[index])
 		if (!page) return false
 		log('Going to manage pages')
@@ -30,7 +31,6 @@ const startCampaign = async function(campaign) {
 		await page.waitFor(2000)
 		if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
 			await clickPuzzleMap(page)
-			await page.waitFor(2000)
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 		}
 		// await updateCredit(page)
@@ -149,11 +149,12 @@ const startCampaign = async function(campaign) {
 		createdLikeCampaigns.push(createdLikeCampaign)
 		if (totalCampaingnsTarget >= parseInt(campaign.target)) {
 			updateUserCampaign(campaign.id, { status: 'ACTIVE' })
+			await browser.close()
 			break
+		}else{
+			await browser.close()
 		}
 	}
-
-	await browser.close()
 	log('Done!')
 	return createdLikeCampaigns
 }

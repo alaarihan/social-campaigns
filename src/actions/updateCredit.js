@@ -7,7 +7,6 @@ async function updateCredit(page) {
 	if (!page) return false
 	if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
 		await clickPuzzleMap(page)
-		await page.waitFor(2000)
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	}
 	const currentCredit = await page

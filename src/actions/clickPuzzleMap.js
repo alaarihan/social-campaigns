@@ -17,6 +17,7 @@ const clickPuzzleMap = async function(page, where) {
 		.catch(error => {
 			log(error.message, 'ERROR')
 		})
+	await page.waitFor(2000)
 }
 
 module.exports = clickPuzzleMap
