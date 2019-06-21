@@ -64,11 +64,11 @@ const startEarning = async function() {
 				await page.waitFor(2000)
 			})
 		})
-	await page.waitFor(2000)
-	await removeAntibot(page)
 	await updateCredit(page)
-	await page.waitFor(2000)
-	for (let index = 0; index < 10; index++) {
+	for (let index = 0; index < 8; index++) {
+		await page.waitFor(2000)
+		await removeAntibot(page)
+		await page.waitFor(2000)
 		await clickAds(page, browser)
 		log('Click load more button')
 		await page.click('#load-more-links').catch(async error => {
@@ -80,7 +80,6 @@ const startEarning = async function() {
 				log(error.message, 'ERROR')
 			}
 		})
-		await page.waitFor(2000)
 	}
 	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	await updateCredit(page)
