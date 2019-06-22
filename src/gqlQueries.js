@@ -33,10 +33,24 @@ const gqlQueries = {
       }
     }
   }`,
+	updateLikeCampaign: `mutation update_likeCampaign($_set: likeCampaign_set_input, $where: likeCampaign_bool_exp!){
+    update_likeCampaign(_set: $_set, where: $where) {
+      affected_rows
+      returning{
+        id
+        name
+        limit
+        status
+      }
+    }
+  }`,
 	updateCampaign: `mutation update_campaign($_set: campaign_set_input, $where: campaign_bool_exp!){
     update_campaign(_set: $_set, where: $where) {
         returning{
         id
+        likeCampaigns{
+          id
+        }
         }
     }
   }`

@@ -8,10 +8,11 @@ const updateUserCampaign = async function(id, data) {
 		where: { id: { _eq: id } }
 	}
 
-	await gqlClient
+	return await gqlClient
 		.request(updateCampaign, variables)
 		.then(function(data) {
 			log(`Update user campaign ${data.update_campaign.returning[0].id}`)
+			return data.update_campaign.returning[0]
 		})
 		.catch(function(error) {
 			log("Couldn't update user campaign ", 'ERROR')

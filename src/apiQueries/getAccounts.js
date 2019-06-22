@@ -2,12 +2,13 @@ const getAccountsGql = require('../gqlQueries').getAccounts
 const { gqlClient } = require('../utils')
 const log = require('../apiQueries/log')
 
-const getAccounts = async function(status) {
+const getAccounts = async function(where) {
+	if (!where) {
+		where = { status: { _in: ['OFFLINE', 'ONLINE'] } }
+	}
 	let variables = {
 		order_by: { credit: 'desc' },
-		where: status
-			? { status: { _eq: status } }
-			: { status: { _in: ['OFFLINE', 'ONLINE'] } }
+		where
 	}
 	return await gqlClient
 		.request(getAccountsGql, variables)

@@ -3,6 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const startEarning = require('./earning')
 const startCampaign = require('./startCampaign')
+const cancelCampaign = require('./cancelCampaign')
 
 const app = express()
 
@@ -46,6 +47,19 @@ app.post('/run/startCampaign', async function(req, res, next) {
 	const campaign = req.body.event.data.new
 	const createdCampaigns = await startCampaign(campaign)
 	res.send(createdCampaigns)
+})
+app.post('/run/cancelCampaign', async function(req, res, next) {
+	if (
+		!req.body.event ||
+		!req.body.event.data ||
+		!req.body.event.data.new ||
+		!req.body.event.data.new.id
+	)
+		return next(ExpressError(400, 'Campaign info is required!'))
+	const campaign = req.body.event.data.new
+	if (campaign.status !== 'CANCELED') res.send('Nothing to do!')
+	const canceledCampaigns = await cancelCampaign(campaign)
+	res.send(canceledCampaigns)
 })
 
 app.listen({ port: process.env.PORT || 4001 }, () =>
