@@ -57,7 +57,7 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	)
 		return next(ExpressError(400, 'Campaign info is required!'))
 	const campaign = req.body.event.data.new
-	if (campaign.status !== 'CANCELED') res.send('Nothing to do!')
+	if (campaign.status !== 'CANCELED') return res.send('Nothing to do!')
 	const canceledCampaigns = await cancelCampaign(campaign)
 	res.send(canceledCampaigns)
 })
