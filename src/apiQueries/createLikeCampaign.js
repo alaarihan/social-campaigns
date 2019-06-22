@@ -9,7 +9,7 @@ const createLikeCampaign = async function(variables) {
 			return data.insert_likeCampaign.returning[0]
 		})
 		.catch(function(error) {
-			log("Couldn't create like Campaign " + error.message, 'ERROR')
+			log("Couldn't create like campaign " + error.message, 'ERROR')
 		})
 }
 

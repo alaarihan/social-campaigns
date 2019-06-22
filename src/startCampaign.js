@@ -151,9 +151,16 @@ const startCampaign = async function(campaign) {
 			updateUserCampaign(campaign.id, { status: 'ACTIVE' })
 			await browser.close()
 			break
-		}else{
+		} else {
 			await browser.close()
 		}
+	}
+	if (
+		totalCampaingnsTarget < parseInt(campaign.target) &&
+		createdLikeCampaigns.length > 0
+	) {
+		updateUserCampaign(campaign.id, { status: 'PARTIALLY_ACTIVE' })
+		await browser.close()
 	}
 	log('Done!')
 	return createdLikeCampaigns
