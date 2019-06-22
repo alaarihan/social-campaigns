@@ -89,6 +89,7 @@ const startCampaign = async function(campaign) {
 				log(error.message)
 			})
 		await page.waitFor(2000)
+		await browser.close()
 	}
 	const updatedUserCampaign = await updateUserCampaign(campaign.id, {
 		status: 'CANCELED'
@@ -103,7 +104,6 @@ const startCampaign = async function(campaign) {
 			status: 'CANCELED'
 		})
 	}
-	await browser.close()
 	log('Done!')
 	return updatedUserCampaignLikeCampaigns
 }
