@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const startEarning = require('./earning')
 const startCampaign = require('./startCampaign')
 const cancelCampaign = require('./cancelCampaign')
+const updateCampaignProgress = require('./updateCampaignProgress')
 
 const app = express()
 
@@ -60,6 +61,14 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	if (campaign.status !== 'CANCELED') return res.send('Nothing to do!')
 	const canceledCampaigns = await cancelCampaign(campaign)
 	res.send(canceledCampaigns)
+})
+
+app.post('/run/updateCampaignProgress', async function(req, res, next) {
+	const campaign = req.body
+	if (!campaign.id) return next(ExpressError(400, 'Campaign info is required!'))
+	if (campaign.status !== 'ACTIVE') return res.send('Nothing to do!')
+	const updatedCampaign = await updateCampaignProgress(campaign)
+	res.send(updatedCampaign)
 })
 
 app.listen({ port: process.env.PORT || 4001 }, () =>

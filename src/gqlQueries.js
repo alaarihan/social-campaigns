@@ -44,6 +44,28 @@ const gqlQueries = {
       }
     }
   }`,
+	getCampaigns: `query campaign($order_by: [campaign_order_by!], $where: campaign_bool_exp){
+    campaign(order_by: $order_by, where: $where) {
+      id
+      target
+      progress
+      status
+      link
+      likeCampaigns{
+        id
+        progress
+        limit
+        account{
+          id
+          username
+          password
+          status
+          credit
+        }
+      }
+      
+    }
+  }`,
 	updateCampaign: `mutation update_campaign($_set: campaign_set_input, $where: campaign_bool_exp!){
     update_campaign(_set: $_set, where: $where) {
         returning{

@@ -2,8 +2,10 @@ import { getCurrentAccount } from '../setAccount'
 import { updateAccountCredit, log } from '../apiQueries'
 const clickPuzzleMap = require('./clickPuzzleMap')
 
-async function updateCredit(page) {
-	const account = await getCurrentAccount()
+async function updateCredit(page, account) {
+	if (!account) {
+		account = await getCurrentAccount()
+	}
 	if (!page) return false
 	if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
 		await clickPuzzleMap(page)
