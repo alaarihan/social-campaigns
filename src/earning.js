@@ -16,7 +16,7 @@ const startEarning = async function() {
 	const browser = await puppeteer.launch({
 		headless: runMode,
 		defaultViewport: null,
-		args: ['--no-sandbox']
+		args: ['--no-sandbox', '--disable-features=site-per-process']
 	})
 	await updateInactiveAccountsState()
 	let page = await browser.pages()
@@ -43,7 +43,7 @@ const startEarning = async function() {
 	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	await page.waitFor(2000)
 	if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-		await clickPuzzleMap(page)
+		await clickPuzzleMap(page, 'Bonus page')
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	} else if (
 		page.url() === 'https://www.like4like.org/login/verify-email.php'
@@ -65,7 +65,7 @@ const startEarning = async function() {
 		})
 	await updateCredit(page)
 	for (let index = 0; index < 8; index++) {
-		await page.waitFor(2000)
+		await page.waitFor(1000)
 		await removeAntibot(page)
 		await page.waitFor(2000)
 		await clickAds(page, browser)

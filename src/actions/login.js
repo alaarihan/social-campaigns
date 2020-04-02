@@ -23,10 +23,7 @@ async function login(page, account) {
 	await page.click('a[onclick="LoginFunctions();"]')
 	await page.waitForSelector('a[href="https://www.like4like.org/user/"]', {
 		timeout: 7000
-	})
-	if (page.url() === 'https://www.like4like.org/') {
-		log('Successfully logged in to Like4Like')
-	} else {
+	}).catch(async err => {
 		log('Could not Login to Like4Like!', 'ERROR')
 		const errorText = await page.evaluate(
 			() => document.querySelector('#h3').innerText
@@ -36,7 +33,12 @@ async function login(page, account) {
 			accountStatus = 'DEACTIVATED'
 		}
 		await changeAccountStatus(account.id, accountStatus)
+		account = await getNewAccount()
+		login(page, account)
 		return false
+	})
+	if (page.url() === 'https://www.like4like.org/') {
+		log('Successfully logged in to Like4Like')
 	}
 	// await page.screenshot({ path: 'example.png' })
 	updateLastActivity(account.id)
