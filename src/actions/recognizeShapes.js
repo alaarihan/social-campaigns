@@ -27,6 +27,10 @@ const recognizeShapes = async function(page, where) {
     const model = await tmImage.load(modelURL, metadataURL);
 
     const puzzleEl = await page.$('#result');
+    if(!puzzleEl){
+        log('puzzleEl not found!', 'ERROR')
+        return false
+    }
 
     const image = await puzzleEl.screenshot();
     // await sharp(image).toFile(`puzzleEl.jpg`)
