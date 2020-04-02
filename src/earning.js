@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const log = require('./apiQueries/log')
+const getSetting = require('./apiQueries/getSetting')
 const updateInactiveAccountsState = require('./apiQueries/updateInactiveAccountsState')
 const changeAccountStatus = require('./apiQueries/changeAccountStatus')
 const {
@@ -64,7 +65,12 @@ const startEarning = async function() {
 			})
 		})
 	await updateCredit(page)
-	for (let index = 0; index < 15; index++) {
+	let loopNumber = await getSetting('loopNumber')
+	if(!loopNumber || !loopNumber.value){
+		loopNumber = { value: 10 }
+	}
+	log(`Start the loop ${loopNumber.value} total`)
+	for (let index = 0; index < loopNumber.value; index++) {
 		await page.waitFor(1000)
 		await removeAntibot(page)
 		await page.waitFor(2000)
