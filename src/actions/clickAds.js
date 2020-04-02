@@ -60,18 +60,32 @@ async function clickAds(page, browser) {
 				let repeateTimes = false
 				if(seconds < counterNumber){
 					repeateTimes = Math.ceil(counterNumber/seconds)
-					for (let index = 0; index < repeateTimes; index++) {
-						await iframe2.waitFor(seconds * 1000)
+					await iframe2.waitFor(seconds * 1000)
+					for (let index = 1; index < repeateTimes; index++) {
 						await iframe2.waitForSelector('.ytp-play-button')
+						log(`Click replay #${index}`)
 						await iframe2.click('.ytp-play-button')
+						await iframe2.waitFor(seconds * 1000)
 					}
 				}else{
 					await iframe2.waitFor(counterNumber * 1000)
 				}
 				
 				const puzzleIframe = await iframe.childFrames()[1]
-				await clickPuzzleMap(puzzleIframe, 'video window')
-				await puzzleIframe.waitFor(2000)
+				if(puzzleIframe){
+					await clickPuzzleMap(puzzleIframe, 'video window')
+					await iframe.waitForSelector('#cpcdiv + script + br + br+ div', {
+						timeout: 4000
+					}).then(async () => {
+						const guessText = await iframe.evaluate(
+							() => document.querySelector('#cpcdiv + script + br + br+ div').innerText
+						)
+						log(guessText)
+					}).catch(err => {
+						console.log(err)
+						log('Couldn\'t get the text after clicking the puzzle')
+					})
+				}
 			}
 		})
 		await pages[1].close()
