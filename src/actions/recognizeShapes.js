@@ -28,8 +28,8 @@ const recognizeShapes = async function(page, where) {
 
     const puzzleEl = await page.$('#result');
 
-    // const image = await puzzleEl.screenshot();
-    await sharp(image).toFile(`puzzleEl.jpg`)
+    const image = await puzzleEl.screenshot();
+    // await sharp(image).toFile(`puzzleEl.jpg`)
     let shapes = []
 	let width = 64
 	let height = 63
