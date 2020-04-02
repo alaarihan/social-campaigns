@@ -28,7 +28,7 @@ const recognizeShapes = async function(page, where) {
 
     const puzzleEl = await page.$('#result');
 
-    const image = await puzzleEl.screenshot();
+    // const image = await puzzleEl.screenshot();
     await sharp(image).toFile(`puzzleEl.jpg`)
     let shapes = []
 	let width = 64
@@ -43,7 +43,7 @@ const recognizeShapes = async function(page, where) {
 		  .toBuffer()
 		  //.toFile(`icon-${i}.jpg`)
 		  .catch( err => { console.log(err) });
-		 await sharp(puzzlescreenImage).toFile(i+'.jpg')
+		 // await sharp(puzzlescreenImage).toFile(i+'.jpg')
 
 		left += width
 		const prediction = await getPrediction(model, _arrayBufferToBase64(puzzlescreenImage));

@@ -64,7 +64,7 @@ const startEarning = async function() {
 			})
 		})
 	await updateCredit(page)
-	for (let index = 0; index < 8; index++) {
+	for (let index = 0; index < 15; index++) {
 		await page.waitFor(1000)
 		await removeAntibot(page)
 		await page.waitFor(2000)
