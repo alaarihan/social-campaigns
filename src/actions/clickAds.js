@@ -44,7 +44,7 @@ async function clickAds(page, browser) {
 			)
 			log(`Video duration: ${videoDuration}`)
 			let a = videoDuration.split(':'); // split it at the colons
-			const seconds = (+a[0] * 60 + (+a[1]))
+			const seconds = (+a[0] * 60 + (+a[1]))-1
 			console.log('seconds', seconds)
 			
 			counterText = await iframe.evaluate(
@@ -59,7 +59,7 @@ async function clickAds(page, browser) {
 			} else {
 				let repeateTimes = false
 				if(seconds < counterNumber){
-					repeateTimes = Math.ceil(counterNumber/seconds) - 1
+					repeateTimes = Math.ceil(counterNumber/seconds)
 					for (let index = 0; index < repeateTimes; index++) {
 						await iframe2.waitFor(seconds * 1000)
 						await iframe2.waitForSelector('.ytp-play-button')
