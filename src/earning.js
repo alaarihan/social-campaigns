@@ -72,7 +72,7 @@ const startEarning = async function() {
 		log('Click load more button')
 		await page.click('#load-more-links').catch(async error => {
 			if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-				await clickPuzzleMap(page)
+				await clickPuzzleMap(page, 'Bonus page')
 				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 			} else {
 				log(error.message, 'ERROR')
