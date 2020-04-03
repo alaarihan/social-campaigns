@@ -6,7 +6,7 @@ const changeAccountStatus = require('./apiQueries/changeAccountStatus')
 const {
 	login,
 	clickAds,
-	removeAntibot,
+	// removeAntibot,
 	clickPuzzleMap,
 	updateCredit
 } = require('./actions')
@@ -72,8 +72,8 @@ const startEarning = async function() {
 	log(`Start the loop ${loopNumber.value} total`)
 	for (let index = 0; index < loopNumber.value; index++) {
 		await page.waitFor(1000)
-		await removeAntibot(page)
-		await page.waitFor(2000)
+		// await removeAntibot(page)
+		// await page.waitFor(2000)
 		await clickAds(page, browser)
 		log('Click load more button')
 		let errorText = false
