@@ -67,7 +67,7 @@ const startEarning = async function() {
 	await updateCredit(page)
 	let loopNumber = await getSetting('loopNumber')
 	if(!loopNumber || !loopNumber.value){
-		loopNumber = { value: 10 }
+		loopNumber = { value: 3 }
 	}
 	log(`Start the loop ${loopNumber.value} total`)
 	for (let index = 0; index < loopNumber.value; index++) {
@@ -76,20 +76,30 @@ const startEarning = async function() {
 		await page.waitFor(2000)
 		await clickAds(page, browser)
 		log('Click load more button')
+		let errorText = false
 		await page.click('#load-more-links').catch(async error => {
 			if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
 				await clickPuzzleMap(page, 'Bonus page')
 				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 			} else {
 				log(error.message, 'ERROR')
+				errorText = await page.evaluate(
+					() => document.querySelector('#error-text').innerText
+				)
 			}
 		})
+		if(errorText){
+			log(errorText)
+			if(errorText.indexOf('suspended') !== -1){
+				await changeAccountStatus(account.id, 'SUSPENDED')
+				break
+			}
+		}
 	}
 	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 	await updateCredit(page)
 
 	await browser.close()
-	await changeAccountStatus(account.id, 'OFFLINE')
 	log('Done!')
 }
 
