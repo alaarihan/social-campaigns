@@ -12,7 +12,10 @@ async function clickAds(page, browser) {
 		return false
 	}
 	const account = await getCurrentAccount()
+	let clickAdsloop = 1 
 	while (clickableAds > 0) {
+		log(`Click to view new video #${clickAdsloop}`)
+		clickAdsloop++
 		await page.click('.earn_pages_button:first-child')
 		await page.waitFor(2000)
 		const pages = await browser.pages()
@@ -25,7 +28,7 @@ async function clickAds(page, browser) {
 		let counterNumber = parseInt(
 			counterText.substring(counterText.indexOf('/') + 2).slice(0, -8)
 		)
-		console.log(counterNumber)
+		log(`Required play time: ${counterNumber} seconds`)
 		await iframe
 			.waitForSelector('iframe', { timeout: 10000 })
 			.catch(async () => {
@@ -44,8 +47,10 @@ async function clickAds(page, browser) {
 			)
 			log(`Video duration: ${videoDuration}`)
 			let a = videoDuration.split(':'); // split it at the colons
-			const seconds = (+a[0] * 60 + (+a[1]))-1
-			console.log('seconds', seconds)
+			let seconds = (+a[0] * 60 + (+a[1]))-1
+			if(a.length > 2){
+				seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2])-1
+			}
 			
 			counterText = await iframe.evaluate(
 				() => document.querySelector('#counter').parentElement.innerText
