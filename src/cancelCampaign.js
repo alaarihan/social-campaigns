@@ -17,7 +17,7 @@ const startCampaign = async function(campaign) {
 		browser = await puppeteer.launch({
 			headless: runMode,
 			defaultViewport: null,
-			args: ['--no-sandbox']
+			args: ['--no-sandbox', '--disable-features=site-per-process']
 		})
 		let page = await browser.pages()
 		page = page[0]
@@ -31,7 +31,7 @@ const startCampaign = async function(campaign) {
 		await page.goto('https://www.like4like.org/user/manage-pages.php')
 		await page.waitFor(2000)
 		if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-			await clickPuzzleMap(page)
+			await clickPuzzleMap(page, 'Bonus page')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 		}
 		// await updateCredit(page)
