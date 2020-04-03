@@ -7,12 +7,12 @@ async function clickAds(page, browser) {
 	if(!PageAds){
 		return false
 	}
-	const clickableAds = await checkClickableAds(page)
+	let clickableAds = await checkClickableAds(page)
 	if(!clickableAds){
 		return false
 	}
 	const account = await getCurrentAccount()
-	for (let index = 0; index < PageAds; index++) {
+	while (clickableAds > 0) {
 		await page.click('.earn_pages_button:first-child')
 		await page.waitFor(2000)
 		const pages = await browser.pages()
@@ -91,10 +91,7 @@ async function clickAds(page, browser) {
 		await pages[1].close()
 		await page.waitFor(3000)
 		updateLastActivity(account.id)
-		const clickableAds = await checkClickableAds(page)
-		if(!clickableAds){
-			break;
-		}
+		clickableAds = await checkClickableAds(page)
 	}
 }
 
