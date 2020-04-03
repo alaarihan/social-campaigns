@@ -58,7 +58,6 @@ async function clickAds(page, browser) {
 			let currentCounterNumber = parseInt(
 				counterText.substring(counterText.indexOf('/') - 1).slice(0, -12)
 			)
-			console.log(currentCounterNumber)
 			if (currentCounterNumber === 0) {
 				log('The video is not playing!')
 			} else {

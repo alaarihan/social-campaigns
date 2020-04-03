@@ -10,7 +10,8 @@ async function login(page, account) {
 		account = await getNewAccount()
 	}
 	if (!account) {
-		return await log('No offline accounts available')
+		await log('No offline accounts available')
+		return false
 	}
 	await changeAccountStatus(account.id, 'ONLINE')
 	updateLastActivity(account.id)
