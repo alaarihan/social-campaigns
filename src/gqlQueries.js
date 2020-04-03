@@ -7,6 +7,7 @@ const gqlQueries = {
       status
       last_activity
       credit
+      status_duration
     }
   }`,
 	updateAccount: `mutation update_account($_set: account_set_input, $where: account_bool_exp!){

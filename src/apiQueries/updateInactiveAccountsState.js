@@ -14,55 +14,38 @@ const updateInactiveAccountsState = async function() {
 	await gqlClient
 		.request(getAccounts, variables)
 		.then(function(data) {
-			console.log(data)
 			for (var i = 0, len = data.account.length; i < len; i++) {
 				changeAccountStatus(data.account[i].id, 'OFFLINE')
 			}
 		})
 		.catch(function(error) {
 			log(
-				"Couldn't get onilne accounts to check last activity " + error.message,
+				`Couldn't get onilne accounts to check last activity ${error.message}`,
 				'ERROR'
 			)
 		})
 
-	// Set disabled accounts to offline status after 6 inactive hours
-	await lastActivity.setHours(lastActivity.getHours() - 6)
+	// Set odd account statuses to offline status after pass the specified duration
 	variables = await {
 		order_by: { last_activity: 'asc' },
-		where: { status: { _eq: 'DISABLED' }, last_activity: { _lt: lastActivity } }
+		where: { status: { _nin: ['OFFLINE', 'ONLINE'] },
+		status_duration: {_is_null: false} }
 	}
 	await gqlClient
 		.request(getAccounts, variables)
 		.then(function(data) {
 			for (var i = 0, len = data.account.length; i < len; i++) {
-				changeAccountStatus(data.account[i].id, 'OFFLINE')
+				let statusTime = new Date()
+				statusTime.setMinutes(statusTime.getMinutes() - data.account[i].status_duration)
+				let accountLastActivity = new Date(data.account[i].last_activity)
+				if(accountLastActivity < statusTime ){
+					changeAccountStatus(data.account[i].id, 'OFFLINE', null)
+				}
 			}
 		})
 		.catch(function(error) {
 			log(
-				"Couldn't get disabled accounts to check last activity ",
-				error,
-				'ERROR'
-			)
-		})
-	// Set disabled accounts to offline status after 6 inactive hours
-	await lastActivity.setHours(lastActivity.getHours() - 18)
-	variables = await {
-		order_by: { last_activity: 'asc' },
-		where: { status: { _eq: 'BLOCKED' }, last_activity: { _lt: lastActivity } }
-	}
-	await gqlClient
-		.request(getAccounts, variables)
-		.then(function(data) {
-			for (var i = 0, len = data.account.length; i < len; i++) {
-				changeAccountStatus(data.account[i].id, 'OFFLINE')
-			}
-		})
-		.catch(function(error) {
-			log(
-				"Couldn't get disabled accounts to check last activity ",
-				error,
+				`Couldn't get disabled accounts to check last activity ${error.message}`,
 				'ERROR'
 			)
 		})

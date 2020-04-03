@@ -29,13 +29,15 @@ async function login(page, account) {
 		const errorText = await page.evaluate(
 			() => document.querySelector('#h3').innerText
 		)
+		let statusDuration = null
 		let accountStatus = 'OFFLINE'
 		if (errorText.indexOf('deactivated') !== -1) {
 			accountStatus = 'DEACTIVATED'
 		}else if(errorText.indexOf('blocked') !== -1) {
 			accountStatus = 'BLOCKED'
+			statusDuration = 60 * 24
 		}
-		await changeAccountStatus(account.id, accountStatus)
+		await changeAccountStatus(account.id, accountStatus, statusDuration)
 		account = await getNewAccount()
 		login(page, account)
 		return false

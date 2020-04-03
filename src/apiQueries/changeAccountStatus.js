@@ -2,10 +2,14 @@ import { updateAccount } from '../gqlQueries'
 import { gqlClient } from '../utils'
 const log = require('./log')
 
-const changeAccountStatus = async function(id, status) {
+const changeAccountStatus = async function(id, status, duration) {
 	let variables = {
 		_set: { status },
 		where: { id: { _eq: id } }
+	}
+
+	if(duration !== undefined){
+		variables._set.status_duration = duration
 	}
 
 	await gqlClient

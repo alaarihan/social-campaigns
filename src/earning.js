@@ -14,6 +14,7 @@ const { getCurrentAccount } = require('./setAccount')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
+	try{
 	const browser = await puppeteer.launch({
 		headless: runMode,
 		defaultViewport: null,
@@ -89,10 +90,16 @@ const startEarning = async function() {
 			}
 		})
 		if(errorText){
-			log(errorText)
-			if(errorText.indexOf('suspended') !== -1){
-				await changeAccountStatus(account.id, 'SUSPENDED')
-				break
+			log(`Error text: ${errorText}`)
+			if(errorText.indexOf('No tasks are currently available') !== -1){
+				await changeAccountStatus(account.id, 'SUSPENDED', (4 * 60))
+				throw new Error(`Account SUSPENDED! ${errorText}`);
+			}else if(errorText.indexOf('No tasks are currently available') !== -1){
+				changeAccountStatus(account.id, 'DONE', 360)
+				if(browser){
+					await browser.close()
+				}
+				return true
 			}
 		}
 	}
@@ -100,7 +107,16 @@ const startEarning = async function() {
 	await updateCredit(page)
 
 	await browser.close()
+	changeAccountStatus(account.id, 'DONE', 360)
 	log('Done!')
+}
+	catch(err) {
+		if(browser){
+			await browser.close()
+		}
+		await changeAccountStatus(account.id, 'OFFLINE')
+		log(`Error happened in startEarning! ${err.message}`, 'ERROR' )
+	}
 }
 
 module.exports = startEarning
