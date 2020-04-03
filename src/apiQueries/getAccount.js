@@ -4,7 +4,7 @@ const log = require('./log')
 // Get an offline account
 const getAccount = async function() {
 	let variables = {
-		order_by: { lastActivity: 'asc' },
+		order_by: { last_activity: 'asc' },
 		where: { status: { _eq: 'OFFLINE' } }
 	}
 	return await gqlClient

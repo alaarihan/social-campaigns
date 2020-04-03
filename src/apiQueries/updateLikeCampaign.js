@@ -11,7 +11,7 @@ const updateLikeCampaign = async function(id, data) {
 	await gqlClient
 		.request(updateLikeCampaignGql, variables)
 		.then(function(data) {
-			log(`Update like campaign ${data.update_likeCampaign.returning[0].id}`)
+			log(`Update like campaign ${data.update_like_campaign.returning[0].id}`)
 		})
 		.catch(function(error) {
 			log("Couldn't update like campaign " + error, 'ERROR')

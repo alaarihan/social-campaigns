@@ -8,8 +8,8 @@ const updateInactiveAccountsState = async function() {
 	let lastActivity = new Date()
 	lastActivity.setMinutes(lastActivity.getMinutes() - 4)
 	let variables = {
-		order_by: { lastActivity: 'asc' },
-		where: { status: { _eq: 'ONLINE' }, lastActivity: { _lt: lastActivity } }
+		order_by: { last_activity: 'asc' },
+		where: { status: { _eq: 'ONLINE' }, last_activity: { _lt: lastActivity } }
 	}
 	await gqlClient
 		.request(getAccounts, variables)
@@ -29,8 +29,8 @@ const updateInactiveAccountsState = async function() {
 	// Set disabled accounts to offline status after 6 inactive hours
 	await lastActivity.setHours(lastActivity.getHours() - 6)
 	variables = await {
-		order_by: { lastActivity: 'asc' },
-		where: { status: { _eq: 'DISABLED' }, lastActivity: { _lt: lastActivity } }
+		order_by: { last_activity: 'asc' },
+		where: { status: { _eq: 'DISABLED' }, last_activity: { _lt: lastActivity } }
 	}
 	await gqlClient
 		.request(getAccounts, variables)
@@ -49,8 +49,8 @@ const updateInactiveAccountsState = async function() {
 	// Set disabled accounts to offline status after 6 inactive hours
 	await lastActivity.setHours(lastActivity.getHours() - 18)
 	variables = await {
-		order_by: { lastActivity: 'asc' },
-		where: { status: { _eq: 'BLOCKED' }, lastActivity: { _lt: lastActivity } }
+		order_by: { last_activity: 'asc' },
+		where: { status: { _eq: 'BLOCKED' }, last_activity: { _lt: lastActivity } }
 	}
 	await gqlClient
 		.request(getAccounts, variables)

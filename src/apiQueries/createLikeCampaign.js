@@ -6,7 +6,7 @@ const createLikeCampaign = async function(variables) {
 		.request(createLikeCampaignGql, { objects: variables })
 		.then(function(data) {
 			log('The like campaign has been created')
-			return data.insert_likeCampaign.returning[0]
+			return data.insert_like_campaign.returning[0]
 		})
 		.catch(function(error) {
 			log("Couldn't create like campaign " + error.message, 'ERROR')

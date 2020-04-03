@@ -17,13 +17,13 @@ const log = async function(message, type) {
 		variables = {
 			message,
 			type,
-			hostName
+			host_name: hostName
 		}
 	} else {
 		variables = {
 			message,
 			type,
-			hostName,
+			host_name: hostName,
 			account_id: account.id
 		}
 	}

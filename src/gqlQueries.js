@@ -5,7 +5,7 @@ const gqlQueries = {
       username
       password
       status
-      lastActivity
+      last_activity
       credit
     }
   }`,
@@ -17,13 +17,13 @@ const gqlQueries = {
         }
     }
   }`,
-	createLog: `mutation insert_log($message: String, $type: String, $hostName: String $account_id: Int){
-    insert_log(objects: { message: $message, type: $type, hostName: $hostName account_id: $account_id }) {
+	createLog: `mutation insert_log($message: String, $type: String, $host_name: String $account_id: Int){
+    insert_log(objects: { message: $message, type: $type, host_name: $host_name account_id: $account_id }) {
       affected_rows
     }
   }`,
-	createLikeCampaign: `mutation insert_likeCampaign($objects: [likeCampaign_insert_input!]!){
-    insert_likeCampaign(objects: $objects) {
+	createLikeCampaign: `mutation insert_like_campaign($objects: [like_campaign_insert_input!]!){
+    insert_like_campaign(objects: $objects) {
       affected_rows
       returning{
         id
@@ -33,8 +33,8 @@ const gqlQueries = {
       }
     }
   }`,
-	updateLikeCampaign: `mutation update_likeCampaign($_set: likeCampaign_set_input, $where: likeCampaign_bool_exp!){
-    update_likeCampaign(_set: $_set, where: $where) {
+	updateLikeCampaign: `mutation update_like_campaign($_set: like_campaign_set_input, $where: like_campaign_bool_exp!){
+    update_like_campaign(_set: $_set, where: $where) {
       affected_rows
       returning{
         id
@@ -51,7 +51,7 @@ const gqlQueries = {
       progress
       status
       link
-      likeCampaigns{
+      like_campaigns{
         id
         progress
         limit
@@ -70,7 +70,7 @@ const gqlQueries = {
     update_campaign(_set: $_set, where: $where) {
         returning{
         id
-        likeCampaigns{
+        like_campaigns{
           id
         }
         }

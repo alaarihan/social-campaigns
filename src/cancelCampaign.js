@@ -9,7 +9,7 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	const accounts = await getAccounts({
-		likeCampaigns: { userCampaign: { id: { _eq: campaign.id } } }
+		like_campaigns: { user_campaign: { id: { _eq: campaign.id } } }
 	})
 	if (accounts.length < 1) return false
 	var totalCampaingnsTarget = 0
@@ -94,7 +94,7 @@ const startCampaign = async function(campaign) {
 	const updatedUserCampaign = await updateUserCampaign(campaign.id, {
 		status: 'CANCELED'
 	})
-	const updatedUserCampaignLikeCampaigns = updatedUserCampaign.likeCampaigns
+	const updatedUserCampaignLikeCampaigns = updatedUserCampaign.like_campaigns
 	for (
 		let index = 0;
 		index < updatedUserCampaignLikeCampaigns.length;

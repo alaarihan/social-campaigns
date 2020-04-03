@@ -5,7 +5,7 @@ const log = require('./log')
 const updateLastActivity = async function(id) {
 	let now = new Date()
 	let variables = {
-		_set: { lastActivity: now },
+		_set: { last_activity: now },
 		where: { id: { _eq: id } }
 	}
 

@@ -9,10 +9,10 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const updateCampaignProgress = async function(campaign) {
 	campaign = await getUserCampaignById(campaign.id)
-	if (campaign.likeCampaigns.length < 1) return false
+	if (campaign.like_campaigns.length < 1) return false
 	var campaignProgress = 0
-	for (let index = 0; index < campaign.likeCampaigns.length; index++) {
-		const likeCampaign = campaign.likeCampaigns[index]
+	for (let index = 0; index < campaign.like_campaigns.length; index++) {
+		const likeCampaign = campaign.like_campaigns[index]
 		const account = likeCampaign.account
 		browser = await puppeteer.launch({
 			headless: runMode,
