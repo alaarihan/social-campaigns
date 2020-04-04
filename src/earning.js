@@ -65,6 +65,15 @@ const startEarning = async function() {
 				await page.waitFor(2000)
 			})
 		})
+	await page.waitForSelector('#refcred a', { timeout: 1000, visible: true })
+	.then(async () => {
+		log('Collect refunded credit')
+		await page.click('#refcred a')
+		await page.waitFor(2000)
+	})
+	.catch ((error) => {
+		console.log('')
+	})
 	await updateCredit(page)
 	let loopNumber = await getSetting('loopNumber')
 	if(!loopNumber || !loopNumber.value){
@@ -111,7 +120,7 @@ const startEarning = async function() {
 	log('Done!')
 }
 	catch(err) {
-		if(browser){
+		if(browser !== undefined && browser){
 			await browser.close()
 		}
 		await changeAccountStatus(account.id, 'OFFLINE')
