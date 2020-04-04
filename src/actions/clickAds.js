@@ -14,6 +14,7 @@ async function clickAds(page, browser) {
 	const account = await getCurrentAccount()
 	let clickAdsloop = 1 
 	while (clickableAds > 0) {
+		try{
 		log(`Click to view new video #${clickAdsloop}`)
 		clickAdsloop++
 		await page.click('.earn_pages_button:first-child')
@@ -31,14 +32,13 @@ async function clickAds(page, browser) {
 		log(`Required play time: ${counterNumber} seconds`)
 		await iframe
 			.waitForSelector('iframe', { timeout: 10000 })
-			.catch(async () => {
-				log("Couldn't find youtube frame!", 'ERROR')
+			.catch(async (err) => {
 				await pages[1].close()
-				continue
+				throw new Error(`Couldn't find video frame! ${err.message}`);
 			})
 		const iframe2 = await iframe.childFrames()[0]
 		if (!iframe2) {
-			continue
+			throw new Error(`Couldn't find youtube frame!`);
 		}
 		await iframe2.waitForSelector('.ytp-large-play-button')
 		await iframe2.click('.ytp-large-play-button')
@@ -97,6 +97,15 @@ async function clickAds(page, browser) {
 		await page.waitFor(3000)
 		updateLastActivity(account.id)
 		clickableAds = await checkClickableAds(page)
+	}
+	catch(err){
+		log(`Error happened in clickAds ${err.message}`)
+		updateLastActivity(account.id)
+		if(pages[1]){
+			await pages[1].close()
+		}
+		clickableAds = await checkClickableAds(page)
+	}
 	}
 }
 
