@@ -36,10 +36,10 @@ const startCampaign = async function(campaign) {
 		// await updateCredit(page)
 		let campagnLimit = 0
 		let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
-		if (remainingTarget * 11 >= parseInt(accounts[index].credit)) {
+		if (remainingTarget * parseInt(campaign.cost_per_one) >= parseInt(accounts[index].credit)) {
 			campagnLimit = parseInt(accounts[index].credit)
 		} else {
-			campagnLimit = remainingTarget * 11
+			campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
 		}
 		const likeCampaign = {
 			limit: campagnLimit,
@@ -58,7 +58,7 @@ const startCampaign = async function(campaign) {
 		await page.waitForSelector('#add-facebook', { timeout: 7000 })
 		await page.type('#add-facebook', likeCampaign.link)
 		await page.type('#add-facebook-description', campaign.id.toString())
-		await page.select('#add-facebook-credits', '11')
+		await page.select('#add-facebook-credits', campaign.cost_per_one.toString())
 		await page.click('input[name="add-facebook-button"]')
 		await page.waitFor(2000)
 		const errorText = await page.evaluate(
@@ -127,7 +127,7 @@ const startCampaign = async function(campaign) {
 					)
 						.parent()
 						.parent()
-					selector.find('select[name^="add-facebook-credits-id"').val('11')
+					selector.find('select[name^="add-facebook-credits-id"').val(campaign.cost_per_one.toString())
 					selector.find('a[onclick^="updatelink"').trigger('click')
 				},
 
@@ -136,12 +136,12 @@ const startCampaign = async function(campaign) {
 			.catch(error => {
 				log(error.message)
 			})
-		totalCampaingnsTarget += parseInt(campagnLimit) / 11
+		totalCampaingnsTarget += parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
 		const createdLikeCampaign = await createLikeCampaign({
 			name: `#${index + 1} for user campaign #${campaign.id} in account ${
 				accounts[index].username
 			}`,
-			limit: parseInt(campagnLimit) / 11,
+			limit: parseInt(campagnLimit) / parseInt(campaign.cost_per_one),
 			user_compaign_id: campaign.id,
 			account_id: accounts[index].id,
 			status: 'ACTIVE'
