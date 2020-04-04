@@ -34,10 +34,11 @@ async function clickAds(page, browser) {
 			.catch(async () => {
 				log("Couldn't find youtube frame!", 'ERROR')
 				await pages[1].close()
+				continue
 			})
 		const iframe2 = await iframe.childFrames()[0]
 		if (!iframe2) {
-			break
+			continue
 		}
 		await iframe2.waitForSelector('.ytp-large-play-button')
 		await iframe2.click('.ytp-large-play-button')
