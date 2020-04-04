@@ -43,7 +43,9 @@ const startCampaign = async function(campaign) {
 		}
 		const likeCampaign = {
 			limit: campagnLimit,
-			link: campaign.link
+			// Remove everything after the video ID ( because like4 site does that)
+			link: campaign.link.substring(0, campaign.link.indexOf('&')),
+			costPerOne: campaign.cost_per_one.toString()
 		}
 		await page
 			.waitForSelector('a[title="Manage YouTube Videos Pages"]', {
@@ -127,7 +129,7 @@ const startCampaign = async function(campaign) {
 					)
 						.parent()
 						.parent()
-					selector.find('select[name^="add-facebook-credits-id"').val(campaign.cost_per_one.toString())
+					selector.find('select[name^="add-facebook-credits-id"').val(likeCampaign.costPerOne)
 					selector.find('a[onclick^="updatelink"').trigger('click')
 				},
 
