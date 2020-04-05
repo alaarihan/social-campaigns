@@ -41,11 +41,13 @@ const startCampaign = async function(campaign) {
 			campagnLimit = parseInt(accounts[index].credit)
 		} else {
 			campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
-		}
+    }
+    
+    const campaignLink = campaign.link.indexOf('&') !== -1 ? campaign.link.substring(0, campaign.link.indexOf('&')) : campaign.link
 		const likeCampaign = {
 			limit: campagnLimit,
 			// Remove everything after the video ID ( because like4 site does that)
-			link: campaign.link.substring(0, campaign.link.indexOf('&')),
+			link: campaignLink,
 			costPerOne: campaign.cost_per_one.toString(),
 			type: campaign.type
     }
