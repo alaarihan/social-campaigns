@@ -14,117 +14,123 @@ const { getCurrentAccount } = require('./setAccount')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 const startEarning = async function() {
-	try{
-	const browser = await puppeteer.launch({
-		headless: runMode,
-		defaultViewport: null,
-		args: ['--no-sandbox', '--disable-features=site-per-process']
-	})
-	await updateInactiveAccountsState()
-	let page = await browser.pages()
-	page = page[0]
-	if (!page) {
-		await browser.close()
-		return false
-	}
-	await login(page)
-	var account = await getCurrentAccount()
-	if (!account) {
-		log('Waiting for an available offline account')
-		await page.waitFor(240000)
+	try {
+		const browser = await puppeteer.launch({
+			headless: runMode,
+			defaultViewport: null,
+			args: ['--no-sandbox', '--disable-features=site-per-process']
+		})
 		await updateInactiveAccountsState()
+		let page = await browser.pages()
+		page = page[0]
+		if (!page) {
+			await browser.close()
+			return false
+		}
 		await login(page)
 		var account = await getCurrentAccount()
-	}
-	if (!account) {
-		log('Done waiting but still no offline accounts! so abort!')
-		await browser.close()
-		return false
-	}
-	log('Going to earn page')
-	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-	await page.waitFor(2000)
-	if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-		await clickPuzzleMap(page, 'Bonus page')
+		if (!account) {
+			log('Waiting for an available offline account')
+			await page.waitFor(240000)
+			await updateInactiveAccountsState()
+			await login(page)
+			var account = await getCurrentAccount()
+		}
+		if (!account) {
+			log('Done waiting but still no offline accounts! so abort!')
+			await browser.close()
+			return false
+		}
+		log('Going to earn page')
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-	} else if (
-		page.url() === 'https://www.like4like.org/login/verify-email.php'
-	) {
-		log('Need email verification!')
-		await changeAccountStatus(account.id, 'NEED_EMAIL_VERIFY')
-		await browser.close()
-		return false
-	}
-	await page
-		.waitForSelector('.earn_pages_button', { timeout: 7000 })
-		.catch(async error => {
-			log('Click load more button')
-			await page.click('#load-more-links').catch(async error => {
-				log("Couldn't click load more button!", 'ERROR')
-				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+		await page.waitFor(2000)
+		if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
+			await clickPuzzleMap(page, 'Bonus page')
+			await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+		} else if (
+			page.url() === 'https://www.like4like.org/login/verify-email.php'
+		) {
+			log('Need email verification!')
+			await changeAccountStatus(account.id, 'NEED_EMAIL_VERIFY')
+			await browser.close()
+			return false
+		}
+		await page
+			.waitForSelector('.earn_pages_button', { timeout: 7000 })
+			.catch(async error => {
+				log('Click load more button')
+				await page.click('#load-more-links').catch(async error => {
+					log("Couldn't click load more button!", 'ERROR')
+					await page.goto(
+						'https://www.like4like.org/user/earn-youtube-video.php'
+					)
+					await page.waitFor(2000)
+				})
+			})
+		await page
+			.waitForSelector('#refcred a', { timeout: 1000, visible: true })
+			.then(async () => {
+				log('Collect refunded credit')
+				await page.click('#refcred a')
 				await page.waitFor(2000)
 			})
-		})
-	await page.waitForSelector('#refcred a', { timeout: 1000, visible: true })
-	.then(async () => {
-		log('Collect refunded credit')
-		await page.click('#refcred a')
-		await page.waitFor(2000)
-	})
-	.catch ((error) => {
-		console.log('')
-	})
-	await updateCredit(page)
-	let loopNumber = await getSetting('loopNumber')
-	if(!loopNumber || !loopNumber.value){
-		loopNumber = { value: 3 }
-	}
-	log(`Start the loop ${loopNumber.value} total`)
-	for (let index = 0; index < loopNumber.value; index++) {
-		await page.waitFor(1000)
-		// await removeAntibot(page)
-		// await page.waitFor(2000)
-		await clickAds(page, browser)
-		log('Click load more button')
-		let errorText = false
-		await page.click('#load-more-links').catch(async error => {
-			if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-				await clickPuzzleMap(page, 'Bonus page')
-				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-			} else {
-				log(error.message, 'ERROR')
-				errorText = await page.evaluate(
-					() => document.querySelector('#error-text').innerText
-				)
-			}
-		})
-		if(errorText){
-			log(`Error text: ${errorText}`)
-			if(errorText.indexOf('suspended') !== -1){
-				await changeAccountStatus(account.id, 'SUSPENDED', (6 * 60))
-				throw new Error(`Account SUSPENDED! ${errorText}`);
-			}else if(errorText.indexOf('No tasks are currently available') !== -1){
-				changeAccountStatus(account.id, 'DONE', 360)
-				if(browser){
-					await browser.close()
+			.catch(error => {
+				console.log('')
+			})
+		await updateCredit(page)
+		let loopNumber = await getSetting('loopNumber')
+		if (!loopNumber || !loopNumber.value) {
+			loopNumber = { value: 3 }
+		}
+		log(`Start the loop ${loopNumber.value} total`)
+		for (let index = 0; index < loopNumber.value; index++) {
+			await page.waitFor(1000)
+			// await removeAntibot(page)
+			// await page.waitFor(2000)
+			await clickAds(page, browser)
+			log('Click load more button')
+			let errorText = false
+			await page.click('#load-more-links').catch(async error => {
+				if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
+					await clickPuzzleMap(page, 'Bonus page')
+					await page.goto(
+						'https://www.like4like.org/user/earn-youtube-video.php'
+					)
+				} else {
+					log(error.message, 'ERROR')
+					errorText = await page.evaluate(
+						() => document.querySelector('#error-text').innerText
+					)
 				}
-				return true
+			})
+			if (errorText) {
+				log(`Error text: ${errorText}`)
+				if (errorText.indexOf('suspended') !== -1) {
+					await changeAccountStatus(account.id, 'SUSPENDED', 6 * 60)
+					throw new Error(`Account SUSPENDED! ${errorText}`)
+				} else if (
+					errorText.indexOf('No tasks are currently available') !== -1
+				) {
+					changeAccountStatus(account.id, 'DONE', 360)
+					if (browser) {
+						await browser.close()
+					}
+					return true
+				}
 			}
 		}
-	}
-	await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-	await updateCredit(page)
+		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+		await updateCredit(page)
 
-	await browser.close()
-	changeAccountStatus(account.id, 'DONE', 360)
-	log('Done!')
-}
-	catch(err) {
-		if(browser !== undefined && browser){
+		await browser.close()
+		changeAccountStatus(account.id, 'DONE', 360)
+		log('Done!')
+	} catch (err) {
+		if (browser !== undefined && browser) {
 			await browser.close()
 		}
 		await changeAccountStatus(account.id, 'OFFLINE')
-		log(`Error happened in startEarning! ${err.message}`, 'ERROR' )
+		log(`Error happened in startEarning! ${err.message}`, 'ERROR')
 	}
 }
 

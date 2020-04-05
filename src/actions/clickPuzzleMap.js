@@ -7,7 +7,7 @@ const clickPuzzleMap = async function(page, where) {
 	}
 	const shapes = await recognizeShapes(page, where)
 	console.log('shapes', shapes)
-	if(!shapes || !shapes.sameShapesIndexes){
+	if (!shapes || !shapes.sameShapesIndexes) {
 		log('recognizing shapes has failed!', 'ERROR')
 		return false
 	}
@@ -16,7 +16,7 @@ const clickPuzzleMap = async function(page, where) {
 		.evaluate(function(indexes) {
 			var mapArea = jQuery('#result .captchaImage')
 			mapArea.each(function(index) {
-				if(indexes.includes(index)){
+				if (indexes.includes(index)) {
 					var scriptVal = jQuery(this).attr('onclick')
 					scriptVal = scriptVal.replace('javascript:', '')
 					eval(scriptVal)

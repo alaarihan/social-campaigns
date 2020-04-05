@@ -28,17 +28,21 @@ const updateInactiveAccountsState = async function() {
 	// Set odd account statuses to offline status after pass the specified duration
 	variables = await {
 		order_by: { last_activity: 'asc' },
-		where: { status: { _nin: ['OFFLINE', 'ONLINE'] },
-		status_duration: {_is_null: false} }
+		where: {
+			status: { _nin: ['OFFLINE', 'ONLINE'] },
+			status_duration: { _is_null: false }
+		}
 	}
 	await gqlClient
 		.request(getAccounts, variables)
 		.then(function(data) {
 			for (var i = 0, len = data.account.length; i < len; i++) {
 				let statusTime = new Date()
-				statusTime.setMinutes(statusTime.getMinutes() - data.account[i].status_duration)
+				statusTime.setMinutes(
+					statusTime.getMinutes() - data.account[i].status_duration
+				)
 				let accountLastActivity = new Date(data.account[i].last_activity)
-				if(accountLastActivity < statusTime ){
+				if (accountLastActivity < statusTime) {
 					changeAccountStatus(data.account[i].id, 'OFFLINE', null)
 				}
 			}

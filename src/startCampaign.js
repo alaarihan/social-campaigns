@@ -37,21 +37,27 @@ const startCampaign = async function(campaign) {
 		// await updateCredit(page)
 		let campagnLimit = 0
 		let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
-		if (remainingTarget * parseInt(campaign.cost_per_one) >= parseInt(accounts[index].credit)) {
+		if (
+			remainingTarget * parseInt(campaign.cost_per_one) >=
+			parseInt(accounts[index].credit)
+		) {
 			campagnLimit = parseInt(accounts[index].credit)
 		} else {
 			campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
-    }
-    
-    const campaignLink = campaign.link.indexOf('&') !== -1 ? campaign.link.substring(0, campaign.link.indexOf('&')) : campaign.link
+		}
+
+		const campaignLink =
+			campaign.link.indexOf('&') !== -1
+				? campaign.link.substring(0, campaign.link.indexOf('&'))
+				: campaign.link
 		const likeCampaign = {
 			limit: campagnLimit,
 			// Remove everything after the video ID ( because like4 site does that)
 			link: campaignLink,
 			costPerOne: campaign.cost_per_one.toString(),
 			type: campaign.type
-    }
-    
+		}
+
 		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
 			.waitForSelector(`a[title="${campaignPageTitle}"]`, {
@@ -135,7 +141,9 @@ const startCampaign = async function(campaign) {
 					)
 						.parent()
 						.parent()
-					selector.find('select[name^="add-facebook-credits-id"').val(likeCampaign.costPerOne)
+					selector
+						.find('select[name^="add-facebook-credits-id"')
+						.val(likeCampaign.costPerOne)
 					selector.find('a[onclick^="updatelink"').trigger('click')
 				},
 
@@ -144,7 +152,8 @@ const startCampaign = async function(campaign) {
 			.catch(error => {
 				log(error.message)
 			})
-		totalCampaingnsTarget += parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
+		totalCampaingnsTarget +=
+			parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
 		const createdLikeCampaign = await createLikeCampaign({
 			name: `#${index + 1} for user campaign #${campaign.id} in account ${
 				accounts[index].username
@@ -152,8 +161,8 @@ const startCampaign = async function(campaign) {
 			limit: parseInt(campagnLimit) / parseInt(campaign.cost_per_one),
 			user_compaign_id: campaign.id,
 			account_id: accounts[index].id,
-      status: 'ACTIVE',
-      type: campaign.type
+			status: 'ACTIVE',
+			type: campaign.type
 		})
 		createdLikeCampaigns.push(createdLikeCampaign)
 		if (totalCampaingnsTarget >= parseInt(campaign.target)) {

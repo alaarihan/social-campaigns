@@ -80,13 +80,13 @@ const gqlQueries = {
         }
     }
   }`,
-  getSettings: `query setting($order_by: [setting_order_by!], $where: setting_bool_exp){
+	getSettings: `query setting($order_by: [setting_order_by!], $where: setting_bool_exp){
     setting(order_by: $order_by, where: $where) {
       id
       name
       value
     }
-  }`,
+  }`
 }
 
 module.exports = gqlQueries

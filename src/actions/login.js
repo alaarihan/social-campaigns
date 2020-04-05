@@ -22,26 +22,28 @@ async function login(page, account) {
 	await page.keyboard.down('Tab')
 	await page.keyboard.type(account.password)
 	await page.click('a[onclick="LoginFunctions();"]')
-	await page.waitForSelector('a[href="https://www.like4like.org/user/"]', {
-		timeout: 7000
-	}).catch(async err => {
-		log('Could not Login to Like4Like!', 'ERROR')
-		const errorText = await page.evaluate(
-			() => document.querySelector('#h3').innerText
-		)
-		let statusDuration = null
-		let accountStatus = 'OFFLINE'
-		if (errorText.indexOf('deactivated') !== -1) {
-			accountStatus = 'DEACTIVATED'
-		}else if(errorText.indexOf('blocked') !== -1) {
-			accountStatus = 'BLOCKED'
-			statusDuration = 60 * 24
-		}
-		await changeAccountStatus(account.id, accountStatus, statusDuration)
-		account = await getNewAccount()
-		login(page, account)
-		return false
-	})
+	await page
+		.waitForSelector('a[href="https://www.like4like.org/user/"]', {
+			timeout: 7000
+		})
+		.catch(async err => {
+			log('Could not Login to Like4Like!', 'ERROR')
+			const errorText = await page.evaluate(
+				() => document.querySelector('#h3').innerText
+			)
+			let statusDuration = null
+			let accountStatus = 'OFFLINE'
+			if (errorText.indexOf('deactivated') !== -1) {
+				accountStatus = 'DEACTIVATED'
+			} else if (errorText.indexOf('blocked') !== -1) {
+				accountStatus = 'BLOCKED'
+				statusDuration = 60 * 24
+			}
+			await changeAccountStatus(account.id, accountStatus, statusDuration)
+			account = await getNewAccount()
+			login(page, account)
+			return false
+		})
 	if (page.url() === 'https://www.like4like.org/') {
 		log('Successfully logged in to Like4Like')
 	}

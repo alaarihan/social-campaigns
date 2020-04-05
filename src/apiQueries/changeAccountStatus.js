@@ -8,7 +8,7 @@ const changeAccountStatus = async function(id, status, duration) {
 		where: { id: { _eq: id } }
 	}
 
-	if(duration !== undefined){
+	if (duration !== undefined) {
 		variables._set.status_duration = duration
 	}
 
