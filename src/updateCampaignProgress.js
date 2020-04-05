@@ -4,6 +4,7 @@ const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
 const { login, clickPuzzleMap, updateCredit } = require('./actions')
+import { getCampaignPageTitle } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
@@ -35,16 +36,18 @@ const updateCampaignProgress = async function(campaign) {
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 		}
 		await updateCredit(page, account)
+		
+		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
-			.waitForSelector('a[title="Manage YouTube Videos Pages"]', {
+			.waitForSelector(`a[title="${campaignPageTitle}"]`, {
 				timeout: 7000
 			})
 			.catch(async error => {
 				log(
-					'Something wrong happened, I couldn\'t find "Manage YouTube Videos Pages" link'
+					`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
 				)
 			})
-		await page.click('a[title="Manage YouTube Videos Pages"]')
+		await page.click(`a[title="${campaignPageTitle}"]`)
 		await page.waitForSelector('#add-facebook', { timeout: 12000 })
 		const likeCampaignProgress = await page
 			.evaluate(campaign => {

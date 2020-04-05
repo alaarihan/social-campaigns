@@ -4,10 +4,11 @@ const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
 const { login, clickPuzzleMap } = require('./actions')
+import { getCampaignPageTitle } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
-const startCampaign = async function(campaign) {
+const cancelCampaign = async function(campaign) {
 	const accounts = await getAccounts({
 		like_campaigns: { user_campaign: { id: { _eq: campaign.id } } }
 	})
@@ -46,16 +47,17 @@ const startCampaign = async function(campaign) {
 			limit: campagnLimit,
 			link: campaign.link
 		}
+		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
-			.waitForSelector('a[title="Manage YouTube Videos Pages"]', {
+			.waitForSelector(`a[title="${campaignPageTitle}"]`, {
 				timeout: 7000
 			})
 			.catch(async error => {
 				log(
-					'Something wrong happened, I couldn\'t find "Manage YouTube Videos Pages" link'
+					`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
 				)
 			})
-		await page.click('a[title="Manage YouTube Videos Pages"]')
+		await page.click(`a[title="${campaignPageTitle}"]`)
 		await page.waitForSelector('#add-facebook', { timeout: 7000 })
 		await page
 			.evaluate(likeCampaign => {
@@ -108,4 +110,4 @@ const startCampaign = async function(campaign) {
 	return updatedUserCampaignLikeCampaigns
 }
 
-module.exports = startCampaign
+module.exports = cancelCampaign

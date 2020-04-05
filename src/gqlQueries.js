@@ -31,6 +31,7 @@ const gqlQueries = {
         name
         limit
         status
+        type
       }
     }
   }`,
@@ -42,6 +43,7 @@ const gqlQueries = {
         name
         limit
         status
+        type
       }
     }
   }`,
@@ -52,6 +54,7 @@ const gqlQueries = {
       progress
       status
       link
+      type
       like_campaigns{
         id
         progress

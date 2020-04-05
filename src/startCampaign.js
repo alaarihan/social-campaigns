@@ -4,6 +4,7 @@ const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const { login, clickPuzzleMap } = require('./actions')
+import { getCampaignPageTitle } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
@@ -45,18 +46,21 @@ const startCampaign = async function(campaign) {
 			limit: campagnLimit,
 			// Remove everything after the video ID ( because like4 site does that)
 			link: campaign.link.substring(0, campaign.link.indexOf('&')),
-			costPerOne: campaign.cost_per_one.toString()
-		}
+			costPerOne: campaign.cost_per_one.toString(),
+			type: campaign.type
+    }
+    
+		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
-			.waitForSelector('a[title="Manage YouTube Videos Pages"]', {
+			.waitForSelector(`a[title="${campaignPageTitle}"]`, {
 				timeout: 7000
 			})
 			.catch(async error => {
 				log(
-					'Something wrong happened, I couldn\'t find "Manage YouTube Videos Pages" link'
+					`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
 				)
 			})
-		await page.click('a[title="Manage YouTube Videos Pages"]')
+		await page.click(`a[title="${campaignPageTitle}"]`)
 		await page.waitForSelector('#add-facebook', { timeout: 7000 })
 		await page.type('#add-facebook', likeCampaign.link)
 		await page.type('#add-facebook-description', campaign.id.toString())
@@ -146,7 +150,8 @@ const startCampaign = async function(campaign) {
 			limit: parseInt(campagnLimit) / parseInt(campaign.cost_per_one),
 			user_compaign_id: campaign.id,
 			account_id: accounts[index].id,
-			status: 'ACTIVE'
+      status: 'ACTIVE',
+      type: campaign.type
 		})
 		createdLikeCampaigns.push(createdLikeCampaign)
 		if (totalCampaingnsTarget >= parseInt(campaign.target)) {
