@@ -1,16 +1,16 @@
 function getCampaignPageTitle(type){
 	let campaignPageTitle = ''
 	switch(type) {
-	  case 'YoutubeViews':
+	  case 'YOUTUBE_VIEWS':
 		campaignPageTitle = 'Manage YouTube Videos Pages'
 		break;
-	  case 'YoutubeLikes':
+	  case 'YOUTUBE_LIKES':
 		campaignPageTitle = 'Manage YouTube Likes Pages'
 		break;
-	  case 'YoutubeSubscribes':
+	  case 'YOUTUBE_SUBSCRIBES':
 		campaignPageTitle = 'Manage YouTube Subscribes Pages'
 		break;
-	  case 'YoutubeComments':
+	  case 'YOUTUBE_COMMENTS':
 		campaignPageTitle = 'Manage YouTube Comments Pages'
 		break;
 	  }
