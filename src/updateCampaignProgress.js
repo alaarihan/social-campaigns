@@ -11,6 +11,7 @@ var browser = null
 const updateCampaignProgress = async function(campaign) {
 	campaign = await getUserCampaignById(campaign.id)
 	if (campaign.like_campaigns.length < 1) return false
+	campaign.link = campaign.link.substring(0, campaign.link.indexOf('&'))
 	var campaignProgress = 0
 	for (let index = 0; index < campaign.like_campaigns.length; index++) {
 		const likeCampaign = campaign.like_campaigns[index]
@@ -36,7 +37,7 @@ const updateCampaignProgress = async function(campaign) {
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 		}
 		await updateCredit(page, account)
-		
+
 		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
 			.waitForSelector(`a[title="${campaignPageTitle}"]`, {

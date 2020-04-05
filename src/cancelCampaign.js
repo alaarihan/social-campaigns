@@ -45,7 +45,8 @@ const cancelCampaign = async function(campaign) {
 		}
 		const likeCampaign = {
 			limit: campagnLimit,
-			link: campaign.link
+			// Remove everything after the video ID ( because like4 site does that)
+			link: campaign.link.substring(0, campaign.link.indexOf('&')),
 		}
 		let campaignPageTitle = getCampaignPageTitle(campaign.type)
 		await page
