@@ -32,6 +32,26 @@ function getCampaignPageTitle(type) {
 	return campaignPageTitle
 }
 
+function getYoutubeVideoId(url){
+	const youtube_regex = /^.*(youtu\.be\/|vi?\/|u\/\w\/|embed\/|\?vi?=|\&vi?=)([^#\&\?]*).*/
+	const parsed = url.match(youtube_regex);
+    if (parsed && parsed[2]) {
+      return parsed[2]
+    } else {
+	  console.error(url, parsed);
+	  return false
+    }
+}
+
+function getStandardYoutubeUrl(url){
+	const VideoId = getYoutubeVideoId(url)
+	if(VideoId){
+		return `https://www.youtube.com/watch?v=${VideoId}`
+	}
+	return url
+}
+
 module.exports = {
-	getCampaignPageTitle
+	getCampaignPageTitle,
+	getStandardYoutubeUrl
 }

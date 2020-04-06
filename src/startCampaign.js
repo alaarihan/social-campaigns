@@ -4,7 +4,7 @@ const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const { login, clickPuzzleMap, removeCampaignLink } = require('./actions')
-import { getCampaignPageTitle } from './actions/helpers'
+import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
@@ -52,6 +52,9 @@ const startCampaign = async function(campaign) {
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
+			if(campaign.type.startsWith('YOUTUBE')){
+				campaignLink = getStandardYoutubeUrl(campaign.link)
+			}
 			const likeCampaign = {
 				limit: campagnLimit,
 				link: campaignLink,
@@ -87,6 +90,7 @@ const startCampaign = async function(campaign) {
 			if (errorText === 'Link is already enter') {
 				if (likeCampaign.overwrite === 'yes') {
 					await removeCampaignLink(page, likeCampaign.link)
+					await page.waitFor(1000)
 					await page.click('input[name="add-facebook-button"]')
 					await page.waitFor(2000)
 				} else {

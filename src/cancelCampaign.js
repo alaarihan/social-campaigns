@@ -4,7 +4,7 @@ const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
 const { login, clickPuzzleMap, removeCampaignLink } = require('./actions')
-import { getCampaignPageTitle } from './actions/helpers'
+import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
@@ -41,7 +41,9 @@ const cancelCampaign = async function(campaign) {
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
-
+				if(campaign.type.startsWith('YOUTUBE')){
+					campaignLink = getStandardYoutubeUrl(campaign.link)
+				}
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)
 			await page
 				.waitForSelector(`a[title="${campaignPageTitle}"]`, {
