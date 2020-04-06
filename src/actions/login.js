@@ -28,7 +28,7 @@ async function login(page, account) {
 			timeout: 7000
 		})
 		.catch(async err => {
-			log('Could not Login to Like4Like!', 'ERROR')
+			log(`Could not Login to Like4Like! ${err.message}`, 'ERROR')
 			const errorText = await page.evaluate(
 				() => document.querySelector('#h3').innerText
 			)
