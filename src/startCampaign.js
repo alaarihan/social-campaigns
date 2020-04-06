@@ -3,7 +3,7 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
-const { login, clickPuzzleMap } = require('./actions')
+const { login, clickPuzzleMap, removeCampaignLink } = require('./actions')
 import { getCampaignPageTitle } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
@@ -87,6 +87,8 @@ const startCampaign = async function(campaign) {
 			if (errorText === 'Link is already enter') {
 				if (likeCampaign.overwrite === 'yes') {
 					await removeCampaignLink(page, likeCampaign.link)
+					await page.click('input[name="add-facebook-button"]')
+					await page.waitFor(2000)
 				} else {
 					continue
 				}
@@ -109,28 +111,34 @@ const startCampaign = async function(campaign) {
 				// 	})
 			}
 			await page.waitFor(2000)
-			log('Check Set limit for total credits checkbox')
-			await page
+			const linkId = await page
 				.evaluate(likeCampaign => {
 					var selectorID = jQuery(
 						`tr[id^="links"] span[id^="links-tdlink"]:contains('${likeCampaign.link}')`
 					).attr('id')
-					selectorID = selectorID
+					return selectorID
 						? selectorID.substring('links-tdlink'.length)
 						: ''
-					var selector = '#links' + selectorID
+				}, likeCampaign)
+				.catch(error => {
+					log(error.message)
+				})
+			log('Check Set limit for total credits checkbox')
+			await page
+				.evaluate(linkId => {
+					var selector = '#links' + linkId
 					jQuery(selector + ' a[id^="credit_limit_"]').trigger('click')
 					var limitChecked = jQuery(
-						'#credit-limit-list-' + selectorID + ' input[name="limit"]'
+						'#credit-limit-list-' + linkId + ' input[name="limit"]'
 					).is(':checked')
 					if (!limitChecked) {
 						jQuery(
-							'#credit-limit-list-' + selectorID + ' input[name="limit"]'
+							'#credit-limit-list-' + linkId + ' input[name="limit"]'
 						).trigger('click')
 					} else {
-						totallimitchange(selectorID)
+						totallimitchange(linkId)
 					}
-				}, likeCampaign)
+				}, linkId)
 				.catch(error => {
 					log(error.message)
 				})
@@ -140,7 +148,7 @@ const startCampaign = async function(campaign) {
 				'input[name="Total Credits"]',
 				likeCampaign.limit.toString()
 			)
-			await page.click('a[title="Save Changes"]')
+			await page.click(`#credit-limit-list-${linkId} a[title="Save Changes"]`)
 			await page.waitFor(2000)
 			log('Activate campaign')
 			await page
