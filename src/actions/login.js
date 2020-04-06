@@ -5,7 +5,7 @@ const {
 	changeAccountStatus,
 	log
 } = require('../apiQueries')
-async function login(page, account) {
+async function login(page, account, changeStatus = true) {
 	let accountSpecifyed = account ? true : false
 	if (!account) {
 		account = await getNewAccount()
@@ -14,8 +14,10 @@ async function login(page, account) {
 		await log('No offline accounts available')
 		return false
 	}
-	await changeAccountStatus(account.id, 'ONLINE')
-	updateLastActivity(account.id)
+	if(changeStatus){
+		await changeAccountStatus(account.id, 'ONLINE')
+		updateLastActivity(account.id)
+	}
 	log(`Logging in to ${account.username} account`)
 	await page.goto('https://www.like4like.org/login/')
 	await page.waitForSelector('#username')
@@ -58,8 +60,6 @@ async function login(page, account) {
 	if (page.url() === 'https://www.like4like.org/') {
 		log('Successfully logged in to Like4Like')
 	}
-	// await page.screenshot({ path: 'example.png' })
-	updateLastActivity(account.id)
 }
 
 module.exports = login

@@ -26,7 +26,7 @@ const startCampaign = async function(campaign) {
 				await browser.close()
 				return false
 			}
-			await login(page, accounts[index])
+			await login(page, accounts[index], false)
 			if (!page) return false
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
@@ -193,7 +193,7 @@ const startCampaign = async function(campaign) {
 		log('Done!')
 		return createdLikeCampaigns
 	} catch (err) {
-		if (browser !== undefined && browser) {
+		if (browser) {
 			await browser.close()
 		}
 		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')

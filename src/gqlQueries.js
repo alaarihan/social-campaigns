@@ -55,6 +55,7 @@ const gqlQueries = {
       status
       link
       type
+      overwrite
       like_campaigns{
         id
         progress

@@ -14,7 +14,6 @@ const cancelCampaign = async function(campaign) {
 			like_campaigns: { user_campaign: { id: { _eq: campaign.id } } }
 		})
 		if (accounts.length < 1) return false
-		var totalCampaingnsTarget = 0
 		for (let index = 0; index < accounts.length; index++) {
 			browser = await puppeteer.launch({
 				headless: runMode,
@@ -27,7 +26,7 @@ const cancelCampaign = async function(campaign) {
 				await browser.close()
 				return false
 			}
-			await login(page, accounts[index])
+			await login(page, accounts[index], false)
 
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
@@ -74,7 +73,7 @@ const cancelCampaign = async function(campaign) {
 		log('Done!')
 		return updatedUserCampaignLikeCampaigns
 	} catch (err) {
-		if (browser !== undefined && browser) {
+		if (browser) {
 			await browser.close()
 		}
 		log(`Error happened in cancelCampaign! ${err.message}`, 'ERROR')

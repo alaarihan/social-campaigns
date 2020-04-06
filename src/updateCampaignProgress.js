@@ -32,7 +32,7 @@ const updateCampaignProgress = async function(campaign) {
 				await browser.close()
 				return false
 			}
-			await login(page, account)
+			await login(page, account, false)
 			if (!page) return false
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
@@ -94,7 +94,7 @@ const updateCampaignProgress = async function(campaign) {
 		log('Done!')
 		return updatedUserCampaign
 	} catch (err) {
-		if (browser !== undefined && browser) {
+		if (browser) {
 			await browser.close()
 		}
 		log(`Error happened in updateCampaignProgress! ${err.message}`, 'ERROR')
