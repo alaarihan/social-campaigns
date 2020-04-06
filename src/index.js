@@ -49,6 +49,10 @@ app.post('/run/startCampaign', async function(req, res, next) {
 		return next(ExpressError(400, 'Campaign info is required!'))
 	const campaign = req.body.event.data.new
 	const createdCampaigns = await startCampaign(campaign)
+	if( createdCampaigns instanceof Error){
+		return next(ExpressError(400, createdCampaigns.message))
+	}
+
 	res.send(createdCampaigns)
 })
 app.post('/run/cancelCampaign', async function(req, res, next) {
@@ -62,6 +66,10 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	const campaign = req.body.event.data.new
 	if (campaign.status !== 'CANCELED') return res.send('Nothing to do!')
 	const canceledCampaigns = await cancelCampaign(campaign)
+	if( canceledCampaigns instanceof Error){
+		return next(ExpressError(400, canceledCampaigns.message))
+	}
+	
 	res.send(canceledCampaigns)
 })
 
@@ -70,6 +78,9 @@ app.post('/run/updateCampaignProgress', async function(req, res, next) {
 	if (!campaign.id) return next(ExpressError(400, 'Campaign info is required!'))
 	if (campaign.status !== 'ACTIVE') return res.send('Nothing to do!')
 	const updatedCampaign = await updateCampaignProgress(campaign)
+	if( updatedCampaign instanceof Error){
+		return next(ExpressError(400, updatedCampaign.message))
+	}
 	res.send(updatedCampaign)
 })
 
