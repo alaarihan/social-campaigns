@@ -10,7 +10,7 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts()
+		const accounts = await getAccounts(null, { credit: 'desc' })
 		if (accounts.length < 1) return false
 		var totalCampaingnsTarget = 0
 		var createdLikeCampaigns = []
