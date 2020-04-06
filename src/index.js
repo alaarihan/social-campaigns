@@ -85,8 +85,7 @@ app.post('/run/updateCampaignProgress', async function(req, res, next) {
 	res.send(updatedCampaign)
 })
 
-app.post('/run/updateActiveCampaignsProgress', async function(req, res, next) {
-
+app.get('/run/updateActiveCampaignsProgress', async function(req, res, next) {
 	const updatedCampaigns = await updateActiveCampaignsProgress()
 	if( updatedCampaigns instanceof Error){
 		return next(ExpressError(400, updatedCampaigns.message))
