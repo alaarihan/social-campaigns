@@ -5,6 +5,7 @@ const startEarning = require('./earning')
 const startCampaign = require('./startCampaign')
 const cancelCampaign = require('./cancelCampaign')
 const updateCampaignProgress = require('./updateCampaignProgress')
+const updateActiveCampaignsProgress = require('./updateActiveCampaignsProgress')
 
 const app = express()
 
@@ -82,6 +83,15 @@ app.post('/run/updateCampaignProgress', async function(req, res, next) {
 		return next(ExpressError(400, updatedCampaign.message))
 	}
 	res.send(updatedCampaign)
+})
+
+app.post('/run/updateActiveCampaignsProgress', async function(req, res, next) {
+
+	const updatedCampaigns = await updateActiveCampaignsProgress()
+	if( updatedCampaigns instanceof Error){
+		return next(ExpressError(400, updatedCampaigns.message))
+	}
+	res.send(updatedCampaigns)
 })
 
 app.listen({ port: process.env.PORT || 4001 }, () =>

@@ -10,7 +10,9 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const updateCampaignProgress = async function(campaign) {
 	try {
-		campaign = await getUserCampaignById(campaign.id)
+		if(!campaign.like_campaigns){
+			campaign = await getUserCampaignById(campaign.id)
+		}
 		if (campaign.like_campaigns.length < 1) return false
 		const campaignLink =
 			campaign.link.indexOf('&') !== -1
