@@ -29,12 +29,15 @@ const startEarning = async function(force) {
 			return false
 		}
 	}
+	const browser = await puppeteer.launch({
+		headless: runMode,
+		defaultViewport: null,
+		args: ['--no-sandbox', '--disable-features=site-per-process']
+	}).catch(err => {
+		log(`Couldn't lounch the browser ${err.message}`)
+		return err
+	})
 	try {
-		const browser = await puppeteer.launch({
-			headless: runMode,
-			defaultViewport: null,
-			args: ['--no-sandbox', '--disable-features=site-per-process']
-		})
 		await updateInactiveAccountsState()
 		let page = await browser.pages()
 		page = page[0]
@@ -141,7 +144,7 @@ const startEarning = async function(force) {
 		changeAccountStatus(account.id, 'DONE', 360)
 		log('Done!')
 	} catch (err) {
-		if (browser !== undefined && browser) {
+		if (browser) {
 			await browser.close()
 		}
 		await changeAccountStatus(account.id, 'OFFLINE')

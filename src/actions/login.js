@@ -28,10 +28,14 @@ async function login(page, account) {
 			timeout: 7000
 		})
 		.catch(async err => {
-			log(`Could not Login to Like4Like! ${err.message}`, 'ERROR')
+			log(`Could not Login to Like4Like!`, 'ERROR')
 			const errorText = await page.evaluate(
 				() => document.querySelector('#h3').innerText
 			)
+			if(errorText){
+				log(`Login error message: ${errorText}`)
+			}
+			
 			let statusDuration = null
 			let accountStatus = null
 			if (errorText.indexOf('deactivated') !== -1) {
@@ -45,7 +49,7 @@ async function login(page, account) {
 			}
 			if (!accountSpecifyed) {
 				account = await getNewAccount()
-				login(page, account)
+				await login(page, account)
 			} else {
 				throw new Error(`Couldn't login to account #${account.id}`)
 			}
