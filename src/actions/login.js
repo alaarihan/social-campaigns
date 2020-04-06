@@ -6,6 +6,7 @@ const {
 	log
 } = require('../apiQueries')
 async function login(page, account) {
+	let accountSpecifyed = account ? true : false
 	if (!account) {
 		account = await getNewAccount()
 	}
@@ -32,16 +33,20 @@ async function login(page, account) {
 				() => document.querySelector('#h3').innerText
 			)
 			let statusDuration = null
-			let accountStatus = 'OFFLINE'
+			let accountStatus = null
 			if (errorText.indexOf('deactivated') !== -1) {
 				accountStatus = 'DEACTIVATED'
 			} else if (errorText.indexOf('blocked') !== -1) {
 				accountStatus = 'BLOCKED'
 				statusDuration = 60 * 24
 			}
-			await changeAccountStatus(account.id, accountStatus, statusDuration)
-			account = await getNewAccount()
-			login(page, account)
+			if(accountStatus){
+				await changeAccountStatus(account.id, accountStatus, statusDuration)
+			}
+			if(!accountSpecifyed){
+				account = await getNewAccount()
+				login(page, account)
+			}
 			return false
 		})
 	if (page.url() === 'https://www.like4like.org/') {
