@@ -190,7 +190,8 @@ const startCampaign = async function(campaign) {
 		if (browser !== undefined && browser) {
 			await browser.close()
 		}
-		log(`Error happened in startEarning! ${err.message}`, 'ERROR')
+		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')
+		throw new Error(err.message)
 	}
 }
 
