@@ -146,6 +146,7 @@ const startEarning = async function(force) {
 		}
 		await changeAccountStatus(account.id, 'OFFLINE')
 		log(`Error happened in startEarning! ${err.message}`, 'ERROR')
+		return err.message
 	}
 }
 

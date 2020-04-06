@@ -40,14 +40,16 @@ async function login(page, account) {
 				accountStatus = 'BLOCKED'
 				statusDuration = 60 * 24
 			}
-			if(accountStatus){
+			if (accountStatus) {
 				await changeAccountStatus(account.id, accountStatus, statusDuration)
 			}
-			if(!accountSpecifyed){
+			if (!accountSpecifyed) {
 				account = await getNewAccount()
 				login(page, account)
+			} else {
+				throw new Error(`Couldn't login to account #${account.id}`)
 			}
-			return false
+			return true
 		})
 	if (page.url() === 'https://www.like4like.org/') {
 		log('Successfully logged in to Like4Like')

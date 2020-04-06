@@ -47,16 +47,17 @@ const startCampaign = async function(campaign) {
 				campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
 			}
 
+			// Remove everything after the video ID ( because like4 site does that)
 			const campaignLink =
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
 			const likeCampaign = {
 				limit: campagnLimit,
-				// Remove everything after the video ID ( because like4 site does that)
 				link: campaignLink,
 				costPerOne: campaign.cost_per_one.toString(),
-				type: campaign.type
+				type: campaign.type,
+				overwrite: campaign.overwrite
 			}
 
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)
@@ -82,25 +83,30 @@ const startCampaign = async function(campaign) {
 			const errorText = await page.evaluate(
 				() => document.querySelector('#add-facebook-comment').innerText
 			)
+			log(errorText)
 			if (errorText === 'Link is already enter') {
-				log(errorText)
-				await page.click('#archivea')
-				await page.waitFor(1000)
-				log('Activate the archived link')
-				await page
-					.evaluate(likeCampaign => {
-						var selectorID = jQuery(
-							`span[id^='linksarchive-tdlink']:contains('${likeCampaign.link}')`
-						).attr('id')
-						if (selectorID) {
-							selectorID = selectorID.substring('linksarchive-tdlink'.length)
-							var selector = '#linksarchive' + selectorID
-							jQuery(selector + ' a[onclick^="activatelink"]').trigger('click')
-						}
-					}, likeCampaign)
-					.catch(error => {
-						log(error.message)
-					})
+				if (likeCampaign.overwrite === 'yes') {
+					await removeCampaignLink(page, likeCampaign.link)
+				} else {
+					continue
+				}
+				// await page.click('#archivea')
+				// await page.waitFor(1000)
+				// log('Activate the archived link')
+				// await page
+				// 	.evaluate(likeCampaign => {
+				// 		var selectorID = jQuery(
+				// 			`span[id^='linksarchive-tdlink']:contains('${likeCampaign.link}')`
+				// 		).attr('id')
+				// 		if (selectorID) {
+				// 			selectorID = selectorID.substring('linksarchive-tdlink'.length)
+				// 			var selector = '#linksarchive' + selectorID
+				// 			jQuery(selector + ' a[onclick^="activatelink"]').trigger('click')
+				// 		}
+				// 	}, likeCampaign)
+				// 	.catch(error => {
+				// 		log(error.message)
+				// 	})
 			}
 			await page.waitFor(2000)
 			log('Check Set limit for total credits checkbox')
@@ -191,7 +197,7 @@ const startCampaign = async function(campaign) {
 			await browser.close()
 		}
 		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')
-		throw new Error(err.message)
+		return err.message
 	}
 }
 

@@ -3,7 +3,7 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
-const { login, clickPuzzleMap } = require('./actions')
+const { login, clickPuzzleMap, removeCampaignLink } = require('./actions')
 import { getCampaignPageTitle } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
@@ -28,7 +28,7 @@ const cancelCampaign = async function(campaign) {
 				return false
 			}
 			await login(page, accounts[index])
-			if (!page) return false
+
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
@@ -36,23 +36,13 @@ const cancelCampaign = async function(campaign) {
 				await clickPuzzleMap(page, 'Bonus page')
 				await page.goto('https://www.like4like.org/user/manage-pages.php')
 			}
-			// await updateCredit(page)
-			let campagnLimit = 0
-			let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
-			if (remainingTarget * 11 >= parseInt(accounts[index].credit)) {
-				campagnLimit = parseInt(accounts[index].credit)
-			} else {
-				campagnLimit = remainingTarget * 11
-			}
+
+			// Remove everything after the video ID ( because like4 site does that)
 			const campaignLink =
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
-			const likeCampaign = {
-				limit: campagnLimit,
-				// Remove everything after the video ID ( because like4 site does that)
-				link: campaignLink
-			}
+
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)
 			await page
 				.waitForSelector(`a[title="${campaignPageTitle}"]`, {
@@ -65,38 +55,7 @@ const cancelCampaign = async function(campaign) {
 				})
 			await page.click(`a[title="${campaignPageTitle}"]`)
 			await page.waitForSelector('#add-facebook', { timeout: 7000 })
-			await page
-				.evaluate(likeCampaign => {
-					var selectorID = jQuery(
-						`tr[id^="links"] span[id^="links-tdlink"]:contains('${likeCampaign.link}')`
-					).attr('id')
-					selectorID = selectorID
-						? selectorID.substring('links-tdlink'.length)
-						: ''
-					var selector = '#links' + selectorID
-					jQuery(selector + ` a[onclick^="archivelink(${selectorID}"]`).trigger(
-						'click'
-					)
-				}, likeCampaign)
-				.catch(error => {
-					log(error.message)
-				})
-			await page.waitFor(2000)
-			await page
-				.evaluate(likeCampaign => {
-					var selectorID = jQuery(
-						`span[id^='linksarchive-tdlink']:contains('${likeCampaign.link}')`
-					).attr('id')
-					if (selectorID) {
-						selectorID = selectorID.substring('linksarchive-tdlink'.length)
-						var selector = '#linksarchive' + selectorID
-						jQuery(selector + ' a[onclick^="deletelink"]').trigger('click')
-					}
-				}, likeCampaign)
-				.catch(error => {
-					log(error.message)
-				})
-			await page.waitFor(2000)
+			await removeCampaignLink(page, campaignLink)
 			await browser.close()
 		}
 		const updatedUserCampaign = await updateUserCampaign(campaign.id, {
@@ -119,7 +78,7 @@ const cancelCampaign = async function(campaign) {
 			await browser.close()
 		}
 		log(`Error happened in cancelCampaign! ${err.message}`, 'ERROR')
-		throw new Error(err.message)
+		return err.message
 	}
 }
 
