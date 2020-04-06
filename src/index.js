@@ -32,7 +32,9 @@ app.use('/run', function(req, res, next) {
 })
 
 app.get('/run/earning', function(req, res, next) {
-	startEarning()
+	let force = req.query['force'] || req.headers['force']
+	force = force === 'yes' ? true : false
+	startEarning(force)
 	res.send('Running')
 })
 

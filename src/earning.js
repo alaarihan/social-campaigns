@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer')
+const os = require('os')
 const log = require('./apiQueries/log')
 const getSetting = require('./apiQueries/getSetting')
+const getLogs = require('./apiQueries/getLogs')
 const updateInactiveAccountsState = require('./apiQueries/updateInactiveAccountsState')
 const changeAccountStatus = require('./apiQueries/changeAccountStatus')
 const {
@@ -13,7 +15,20 @@ const {
 const { getCurrentAccount } = require('./setAccount')
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
-const startEarning = async function() {
+const hostName = os.hostname()
+const startEarning = async function(force) {
+	if (!force) {
+		let lastCreatedAt = new Date()
+		lastCreatedAt.setMinutes(lastCreatedAt.getMinutes() - 4)
+		const lastLogsFromThisMachine = await getLogs({
+			created_at: { _gt: lastCreatedAt },
+			host_name: { _eq: hostName }
+		})
+		if (lastLogsFromThisMachine && lastLogsFromThisMachine.length > 0) {
+			console.log(`Can't run earning because it seems still running already`)
+			return false
+		}
+	}
 	try {
 		const browser = await puppeteer.launch({
 			headless: runMode,

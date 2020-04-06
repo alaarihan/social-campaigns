@@ -86,6 +86,16 @@ const gqlQueries = {
       name
       value
     }
+  }`,
+	getLogs: `query log($order_by: [log_order_by!], $where: log_bool_exp, $limit: Int, $offset: Int){
+    log(order_by: $order_by, where: $where, limit: $limit, offset: $offset) {
+      id
+      message
+      type
+      account_id
+      host_name
+      created_at
+    }
   }`
 }
 
