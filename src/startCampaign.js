@@ -197,7 +197,7 @@ const startCampaign = async function(campaign) {
 			await browser.close()
 		}
 		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')
-		return err.message
+		return err
 	}
 }
 

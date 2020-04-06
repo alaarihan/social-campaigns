@@ -98,7 +98,7 @@ const updateCampaignProgress = async function(campaign) {
 			await browser.close()
 		}
 		log(`Error happened in updateCampaignProgress! ${err.message}`, 'ERROR')
-		return err.message
+		return err
 	}
 }
 

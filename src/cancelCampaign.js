@@ -77,7 +77,7 @@ const cancelCampaign = async function(campaign) {
 			await browser.close()
 		}
 		log(`Error happened in cancelCampaign! ${err.message}`, 'ERROR')
-		return err.message
+		return err
 	}
 }
 
