@@ -6,7 +6,7 @@ const updateActiveCampaignsProgress = async function() {
 		const campaigns = await getUserCampaigns({status: {_eq: 'ACTIVE'}})
 		if(campaigns && campaigns.length){
 			let updatedCampaigns = []
-			asyncForEach(campaigns, async campaign => {
+			await asyncForEach(campaigns, async campaign => {
 				const updatedCampaign = await updateCampaignProgress(campaign)
 				updatedCampaigns.push(updatedCampaign)
 			});
