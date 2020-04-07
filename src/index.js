@@ -49,6 +49,10 @@ app.post('/run/startCampaign', async function(req, res, next) {
 	)
 		return next(ExpressError(400, 'Campaign info is required!'))
 	const campaign = req.body.event.data.new
+	if(campaign.status !== 'PENDING'){
+		res.send('Nothing to do, because campaign status is ${campaign.status}')
+		return
+	}
 	const createdCampaigns = await startCampaign(campaign)
 	if( createdCampaigns instanceof Error){
 		return next(ExpressError(400, createdCampaigns.message))
