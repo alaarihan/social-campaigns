@@ -14,7 +14,7 @@ const updateCampaignProgress = async function(campaign) {
 			campaign = await getUserCampaignById(campaign.id)
 		}
 		if (campaign.like_campaigns.length < 1) return false
-		let  =campaignLink
+		let campaignLink =
 			campaign.link.indexOf('&') !== -1
 				? campaign.link.substring(0, campaign.link.indexOf('&'))
 				: campaign.link
