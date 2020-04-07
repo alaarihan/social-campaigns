@@ -25,6 +25,8 @@ const updateCampaignProgress = async function(campaign) {
 		var campaignProgress = 0
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
+			if(likeCampaign.status === 'CANCELED')
+				continue;
 			const account = likeCampaign.account
 			browser = await puppeteer.launch({
 				headless: runMode,

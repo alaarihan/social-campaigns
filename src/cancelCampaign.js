@@ -11,7 +11,7 @@ var browser = null
 const cancelCampaign = async function(campaign) {
 	try {
 		const accounts = await getAccounts({
-			like_campaigns: { user_campaign: { id: { _eq: campaign.id } } }
+			like_campaigns: { user_campaign: { id: { _eq: campaign.id }, status: {_neq: 'CANCELED'} } }
 		})
 		if (accounts.length < 1) return false
 		for (let index = 0; index < accounts.length; index++) {
