@@ -48,7 +48,7 @@ const startCampaign = async function(campaign) {
 			}
 
 			// Remove everything after the video ID ( because like4 site does that)
-			const campaignLink =
+			let campaignLink =
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link

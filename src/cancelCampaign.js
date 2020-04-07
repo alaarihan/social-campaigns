@@ -11,7 +11,7 @@ var browser = null
 const cancelCampaign = async function(campaign) {
 	try {
 		const accounts = await getAccounts({
-			like_campaigns: { user_campaign: { id: { _eq: campaign.id } } }
+			like_campaigns: { user_campaign: { id: { _eq: campaign.id }, status: {_neq: 'CANCELED'} } }
 		})
 		if (accounts.length < 1) return false
 		for (let index = 0; index < accounts.length; index++) {
@@ -37,7 +37,7 @@ const cancelCampaign = async function(campaign) {
 			}
 
 			// Remove everything after the video ID ( because like4 site does that)
-			const campaignLink =
+			let campaignLink =
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
