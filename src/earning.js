@@ -149,7 +149,7 @@ const startEarning = async function(force) {
 		if (browser) {
 			await browser.close()
 		}
-		await changeAccountStatus(account.id, 'OFFLINE')
+		await changeAccountStatus(account.id, 'OFFLINE', null)
 		log(`Error happened in startEarning! ${err.message}`, 'ERROR')
 		return err.message
 	}

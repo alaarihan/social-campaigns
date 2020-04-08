@@ -15,7 +15,7 @@ const updateInactiveAccountsState = async function() {
 		.request(getAccounts, variables)
 		.then(function(data) {
 			for (var i = 0, len = data.account.length; i < len; i++) {
-				changeAccountStatus(data.account[i].id, 'OFFLINE')
+				changeAccountStatus(data.account[i].id, 'OFFLINE', null)
 			}
 		})
 		.catch(function(error) {
