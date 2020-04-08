@@ -138,7 +138,7 @@ const startEarning = async function(force) {
 		await updateCredit(page)
 
 		await browser.close()
-		changeAccountStatus(account.id, 'DONE', 3 * 6)
+		changeAccountStatus(account.id, 'DONE', 3 * 60)
 		log('Done!')
 	} catch (err) {
 		if (browser) {
