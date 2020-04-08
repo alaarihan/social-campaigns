@@ -122,10 +122,13 @@ const startEarning = async function(force) {
 				}
 			})
 			if (errorText) {
-				log(`Error text: ${errorText}`)
+				log(`Error text: ${errorText}`, 'ERROR')
 				if (errorText.indexOf('suspended') !== -1) {
 					await changeAccountStatus(account.id, 'SUSPENDED', 6 * 60)
-					throw new Error(`Account SUSPENDED! ${errorText}`)
+					if (browser) {
+						await browser.close()
+					}
+					return false
 				} else if (
 					errorText.indexOf('No tasks are currently available') !== -1
 				) {
