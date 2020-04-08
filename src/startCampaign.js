@@ -3,7 +3,7 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
-const { login, clickPuzzleMap, removeCampaignLink } = require('./actions')
+const { login, checkIfBonustoClickPuzzle, removeCampaignLink } = require('./actions')
 import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
@@ -31,10 +31,7 @@ const startCampaign = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-				await clickPuzzleMap(page, 'Bonus page')
-				await page.goto('https://www.like4like.org/user/manage-pages.php')
-			}
+			await checkIfBonustoClickPuzzle(page)
 			// await updateCredit(page)
 			let campagnLimit = 0
 			let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
