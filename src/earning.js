@@ -124,7 +124,12 @@ const startEarning = async function(force) {
 			if (errorText) {
 				log(`Error text: ${errorText}`, 'ERROR')
 				if (errorText.indexOf('suspended') !== -1) {
-					await changeAccountStatus(account.id, 'SUSPENDED', 6 * 60)
+					let statusDuration = errorText.substring(
+						str.lastIndexOf("the next ") + 9, 
+						str.lastIndexOf(" minutes.")
+					);
+					statusDuration = statusDuration ?  parseInt(statusDuration) + 10 : 60 * 6
+					await changeAccountStatus(account.id, 'SUSPENDED', statusDuration)
 					if (browser) {
 						await browser.close()
 					}
