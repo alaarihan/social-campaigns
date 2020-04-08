@@ -127,6 +127,7 @@ const startEarning = async function(force) {
 					if (browser) {
 						await browser.close()
 					}
+					await updateCredit(page)
 					return false
 				} else if (
 					errorText.indexOf('No tasks are currently available') !== -1
@@ -135,6 +136,7 @@ const startEarning = async function(force) {
 					if (browser) {
 						await browser.close()
 					}
+					await updateCredit(page)
 					return true
 				}
 			}
