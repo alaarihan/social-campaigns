@@ -48,14 +48,7 @@ const startEarning = async function(force) {
 		await login(page)
 		var account = await getCurrentAccount()
 		if (!account) {
-			log('Waiting for an available offline account')
-			await page.waitFor(240000)
-			await updateInactiveAccountsState()
-			await login(page)
-			var account = await getCurrentAccount()
-		}
-		if (!account) {
-			log('Done waiting but still no offline accounts! so abort!')
+			log('No available offline account found!')
 			await browser.close()
 			return false
 		}
