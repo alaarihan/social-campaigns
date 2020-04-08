@@ -177,7 +177,7 @@ const startCampaign = async function(campaign) {
 				name: `#${index + 1} for user campaign #${campaign.id} in account ${
 					accounts[index].username
 				}`,
-				limit: parseInt(campagnLimit) / parseInt(campaign.cost_per_one),
+				limit: Math.ceil(parseInt(campagnLimit) / parseInt(campaign.cost_per_one)),
 				user_compaign_id: campaign.id,
 				account_id: accounts[index].id,
 				status: 'ACTIVE',

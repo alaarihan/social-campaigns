@@ -123,7 +123,7 @@ const startEarning = async function(force) {
 						errorText.lastIndexOf(" minutes.")
 					);
 					statusDuration = statusDuration ?  parseInt(statusDuration) + 10 : 60 * 6
-					await changeAccountStatus(account.id, 'SUSPENDED', statusDuration)
+					await changeAccountStatus(account.id, 'YV_SUSPENDED', statusDuration)
 					if (browser) {
 						await browser.close()
 					}
@@ -149,7 +149,7 @@ const startEarning = async function(force) {
 		if (browser) {
 			await browser.close()
 		}
-		await changeAccountStatus(account.id, 'OFFLINE')
+		await changeAccountStatus(account.id, 'OFFLINE', null)
 		log(`Error happened in startEarning! ${err.message}`, 'ERROR')
 		return err.message
 	}
