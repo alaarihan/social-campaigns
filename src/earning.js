@@ -9,8 +9,8 @@ const {
 	login,
 	clickAds,
 	// removeAntibot,
-	clickPuzzleMap,
-	updateCredit
+	updateCredit,
+	checkIfBonustoClickPuzzle
 } = require('./actions')
 const { getCurrentAccount } = require('./setAccount')
 
@@ -62,10 +62,7 @@ const startEarning = async function(force) {
 		log('Going to earn page')
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 		await page.waitFor(2000)
-		if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-			await clickPuzzleMap(page, 'Bonus page')
-			await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-		} else if (
+		if (
 			page.url() === 'https://www.like4like.org/login/verify-email.php'
 		) {
 			log('Need email verification!')
@@ -73,6 +70,7 @@ const startEarning = async function(force) {
 			await browser.close()
 			return false
 		}
+		await checkIfBonustoClickPuzzle(page)
 		await page
 			.waitForSelector('.earn_pages_button', { timeout: 7000 })
 			.catch(async error => {
@@ -109,12 +107,8 @@ const startEarning = async function(force) {
 			log('Click load more button')
 			let errorText = false
 			await page.click('#load-more-links').catch(async error => {
-				if (page.url() === 'https://www.like4like.org/user/bonus-page.php') {
-					await clickPuzzleMap(page, 'Bonus page')
-					await page.goto(
-						'https://www.like4like.org/user/earn-youtube-video.php'
-					)
-				} else {
+				const bonusClicked = await checkIfBonustoClickPuzzle(page)
+				if(!bonusClicked) {
 					log(error.message, 'ERROR')
 					errorText = await page.evaluate(
 						() => document.querySelector('#error-text').innerText
