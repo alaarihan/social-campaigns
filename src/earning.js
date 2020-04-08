@@ -125,7 +125,7 @@ const startEarning = async function(force) {
 				} else if (
 					errorText.indexOf('No tasks are currently available') !== -1
 				) {
-					changeAccountStatus(account.id, 'DONE', 360)
+					changeAccountStatus(account.id, 'DONE', 3 * 60)
 					if (browser) {
 						await browser.close()
 					}
@@ -138,7 +138,7 @@ const startEarning = async function(force) {
 		await updateCredit(page)
 
 		await browser.close()
-		changeAccountStatus(account.id, 'DONE', 360)
+		changeAccountStatus(account.id, 'DONE', 3 * 6)
 		log('Done!')
 	} catch (err) {
 		if (browser) {
