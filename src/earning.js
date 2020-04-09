@@ -23,7 +23,7 @@ const startEarning = async function(force) {
 		const lastLogsFromThisMachine = await getLogs({
 			created_at: { _gt: lastCreatedAt },
 			host_name: { _eq: hostName }
-		})
+		}, false, 1)
 		if (lastLogsFromThisMachine && lastLogsFromThisMachine.length > 0) {
 			console.log(`Can't run earning because it seems still running already`)
 			return false
