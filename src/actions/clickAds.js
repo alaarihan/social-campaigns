@@ -43,7 +43,7 @@ async function clickAds(page, browser) {
 			}
 			await iframe2.waitForSelector('.ytp-large-play-button')
 			await iframe2.click('.ytp-large-play-button')
-			await iframe2.waitFor(5000).then(async () => {
+			await iframe2.waitFor(8000).then(async () => {
 				const videoDuration = await iframe2.evaluate(
 					() => document.querySelector('.ytp-time-duration').innerText
 				)
@@ -65,13 +65,17 @@ async function clickAds(page, browser) {
 				} else {
 					let repeateTimes = false
 					if (seconds < counterNumber) {
-						repeateTimes = Math.ceil(counterNumber / seconds)
+						repeateTimes = Math.ceil(counterNumber / seconds) - 1
 						await iframe2.waitFor(seconds * 1000)
 						for (let index = 1; index < repeateTimes; index++) {
-							await iframe2.waitForSelector('.ytp-play-button')
-							log(`Click replay #${index}`)
-							await iframe2.click('.ytp-play-button')
-							await iframe2.waitFor(seconds * 1000)
+							try{
+								await iframe2.waitForSelector('.ytp-play-button')
+								log(`Click replay #${index}`)
+								await iframe2.click('.ytp-play-button')
+								await iframe2.waitFor(seconds * 1000)
+							}catch(err){
+								log(`Couldn't click reply ${err.message}`)
+							}
 						}
 					} else {
 						await iframe2.waitFor(counterNumber * 1000)
@@ -96,6 +100,8 @@ async function clickAds(page, browser) {
 								console.log(err)
 								log("Couldn't get the text after clicking the puzzle")
 							})
+					}else{
+						log(`Puzzle didn't show up!`)
 					}
 				}
 			})
