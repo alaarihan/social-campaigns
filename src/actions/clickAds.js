@@ -1,6 +1,7 @@
 const { getCurrentAccount } = require('../setAccount')
 const { log, updateLastActivity } = require('../apiQueries')
 const clickPuzzleMap = require('./clickPuzzleMap')
+const updateCredit = require('./updateCredit')
 
 async function clickAds(page, browser) {
 	const PageAds = await checkPageAds(page)
