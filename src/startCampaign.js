@@ -31,8 +31,8 @@ const startCampaign = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page)
-			// await updateCredit(page)
+			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
+			await updateCredit(page, accounts[index], false)
 			let campagnLimit = 0
 			let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
 			if (

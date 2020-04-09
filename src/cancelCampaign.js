@@ -31,7 +31,7 @@ const cancelCampaign = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page)
+			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
 
 			// Remove everything after the video ID ( because like4 site does that)
 			let campaignLink =

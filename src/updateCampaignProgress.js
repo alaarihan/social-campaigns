@@ -25,7 +25,7 @@ const updateCampaignProgress = async function(campaign) {
 		var campaignProgress = 0
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
-			if(likeCampaign.status === 'CANCELED')
+			if(likeCampaign.status !== 'ACTIVE')
 				continue;
 			const account = likeCampaign.account
 			browser = await puppeteer.launch({
@@ -44,8 +44,8 @@ const updateCampaignProgress = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page)
-			await updateCredit(page, account)
+			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
+			await updateCredit(page, account, false)
 
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)
 			await page

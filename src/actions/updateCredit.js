@@ -2,12 +2,14 @@ import { getCurrentAccount } from '../setAccount'
 import { updateAccountCredit, log } from '../apiQueries'
 const checkIfBonustoClickPuzzle = require('./checkIfBonustoClickPuzzle')
 
-async function updateCredit(page, account) {
+async function updateCredit(page, account, checkBonus = true) {
 	if (!account) {
 		account = await getCurrentAccount()
 	}
 	if (!page) return false
-	await checkIfBonustoClickPuzzle(page)
+	if(checkBonus){
+		await checkIfBonustoClickPuzzle(page)
+	}
 	const currentCredit = await page
 		.evaluate(() => document.querySelector('#earned-credits').innerText)
 		.catch(() => {
