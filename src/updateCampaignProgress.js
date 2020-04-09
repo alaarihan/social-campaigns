@@ -44,8 +44,8 @@ const updateCampaignProgress = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page)
-			await updateCredit(page, account)
+			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
+			await updateCredit(page, account, false)
 
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)
 			await page

@@ -86,7 +86,7 @@ const startEarning = async function(force) {
 			.catch(error => {
 				console.log('')
 			})
-		await updateCredit(page)
+		await updateCredit(page, account, false)
 		let loopNumber = await getSetting('loopNumber')
 		if (!loopNumber || !loopNumber.value) {
 			loopNumber = { value: 3 }
@@ -120,7 +120,7 @@ const startEarning = async function(force) {
 					if (browser) {
 						await browser.close()
 					}
-					await updateCredit(page)
+					await updateCredit(page, account)
 					return false
 				} else if (
 					errorText.indexOf('No tasks are currently available') !== -1
@@ -129,13 +129,13 @@ const startEarning = async function(force) {
 					if (browser) {
 						await browser.close()
 					}
-					await updateCredit(page)
+					await updateCredit(page, account)
 					return true
 				}
 			}
 		}
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-		await updateCredit(page)
+		await updateCredit(page, account)
 
 		await browser.close()
 		changeAccountStatus(account.id, 'DONE', 3 * 60)

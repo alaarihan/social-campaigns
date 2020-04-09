@@ -102,6 +102,7 @@ async function clickAds(page, browser) {
 			await page.waitFor(3000)
 			updateLastActivity(account.id)
 			clickableAds = await checkClickableAds(page)
+			await updateCredit(page, account, false)
 		} catch (err) {
 			log(`Error happened in clickAds ${err.message}`)
 			updateLastActivity(account.id)
