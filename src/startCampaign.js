@@ -3,7 +3,7 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
-const { login, checkIfBonustoClickPuzzle, removeCampaignLink } = require('./actions')
+const { login, checkIfBonustoClickPuzzle, removeCampaignLink, updateCredit } = require('./actions')
 import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
