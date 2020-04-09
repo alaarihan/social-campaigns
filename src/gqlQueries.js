@@ -60,6 +60,7 @@ const gqlQueries = {
         id
         progress
         limit
+        status
         account{
           id
           username
