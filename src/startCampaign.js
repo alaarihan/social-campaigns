@@ -10,7 +10,7 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts(null, { credit: 'desc' })
+		const accounts = await getAccounts(null, { available_credit: 'desc' })
 		if (accounts.length < 1) return false
 		var totalCampaingnsTarget = 0
 		var createdLikeCampaigns = []
@@ -181,7 +181,8 @@ const startCampaign = async function(campaign) {
 				user_compaign_id: campaign.id,
 				account_id: accounts[index].id,
 				status: 'ACTIVE',
-				type: campaign.type
+				type: campaign.type,
+				cost_per_one: campaign.cost_per_one
 			})
 			createdLikeCampaigns.push(createdLikeCampaign)
 			if (totalCampaingnsTarget >= parseInt(campaign.target)) {
