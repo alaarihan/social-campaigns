@@ -67,7 +67,7 @@ async function clickAds(page, browser) {
 					if (seconds < counterNumber) {
 						repeateTimes = Math.ceil(counterNumber / seconds) - 1
 						await iframe2.waitFor(seconds * 1000)
-						for (let index = 1; index < repeateTimes; index++) {
+						for (let index = 0; index < repeateTimes; index++) {
 							try {
 								await iframe2.waitForSelector('.ytp-play-button')
 								log(`Click replay #${index}`)
