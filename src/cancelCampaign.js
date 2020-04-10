@@ -16,10 +16,8 @@ const cancelCampaign = async function(campaign) {
 	try {
 		const accounts = await getAccounts({
 			like_campaigns: {
-				user_campaign: {
-					id: { _eq: campaign.id },
-					status: { _neq: 'CANCELED' }
-				}
+				status: { _eq: 'ACTIVE' },
+				user_compaign_id: { _eq: campaign.id }
 			}
 		})
 		if (accounts.length < 1) return false
@@ -83,6 +81,7 @@ const cancelCampaign = async function(campaign) {
 		}
 		log('Done!')
 		if (
+			campaign.status === 'COMPLETED' &&
 			campaign.repeat &&
 			(campaign.repeat === -1 ||
 				(campaign.repeat > 0 && campaign.repeat > campaign.repeated))

@@ -79,7 +79,7 @@ const gqlQueries = {
     update_campaign(_set: $_set, where: $where) {
         returning{
         id
-        like_campaigns{
+        like_campaigns(where: { status: { _eq: "ACTIVE" } }){
           id
         }
         }
