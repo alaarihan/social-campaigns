@@ -4,6 +4,7 @@ const changeAccountStatus = require('./changeAccountStatus')
 const updateInactiveAccountsState = require('./updateInactiveAccountsState')
 const updateLastActivity = require('./updateLastActivity')
 const updateAccountCredit = require('./updateAccountCredit')
+const deleteLogs = require('./deleteLogs')
 const log = require('./log')
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
 	changeAccountStatus,
 	updateLastActivity,
 	updateAccountCredit,
+	deleteLogs,
 	log
 }
