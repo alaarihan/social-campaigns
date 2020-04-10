@@ -80,29 +80,34 @@ async function clickAds(page, browser) {
 					} else {
 						await iframe2.waitFor(counterNumber * 1000)
 					}
-
-					const puzzleIframe = await iframe.childFrames()[1]
-					if (puzzleIframe) {
-						await clickPuzzleMap(puzzleIframe, 'video window')
-						await iframe
-							.waitForSelector('#cpcdiv + script + br + br+ div', {
-								timeout: 4000
-							})
-							.then(async () => {
-								const guessText = await iframe.evaluate(
-									() =>
-										document.querySelector('#cpcdiv + script + br + br+ div')
-											.innerText
-								)
-								log(guessText)
-							})
-							.catch(err => {
-								console.log(err)
-								log("Couldn't get the text after clicking the puzzle")
-							})
-					}else{
-						log(`Puzzle didn't show up!`)
-					}
+					
+					let puzzleIframe = false
+					await iframe.waitForSelector('#cpcdiv p + iframe', {
+						timeout: 10000
+					}).then(async () => {
+						puzzleIframe = await iframe.childFrames()[1]
+						if (puzzleIframe) {
+							await clickPuzzleMap(puzzleIframe, 'video window')
+							await iframe
+								.waitForSelector('#cpcdiv + script + br + br+ div', {
+									timeout: 4000
+								})
+								.then(async () => {
+									const guessText = await iframe.evaluate(
+										() =>
+											document.querySelector('#cpcdiv + script + br + br+ div')
+												.innerText
+									)
+									log(guessText)
+								})
+								.catch(err => {
+									console.log(err)
+									log("Couldn't get the text after clicking the puzzle")
+								})
+						}
+					}).catch(async err => {
+						log(`Puzzle didn't show up! ${err.message}`)
+					})
 				}
 			})
 			await pages[1].close()
