@@ -7,6 +7,7 @@ const gqlQueries = {
       status
       last_activity
       credit
+      available_credit
       status_duration
     }
   }`,

@@ -15,11 +15,12 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts(null, { available_credit: 'desc' })
+		const accounts = await getAccounts(null, { credit: 'desc' })
 		if (accounts.length < 1) return false
 		var totalCampaingnsTarget = 0
 		var createdLikeCampaigns = []
 		for (let index = 0; index < accounts.length; index++) {
+			if (accounts[index].available_credit < campaign.cost_per_one) continue
 			browser = await puppeteer.launch({
 				headless: runMode,
 				defaultViewport: null,
@@ -45,9 +46,9 @@ const startCampaign = async function(campaign) {
 			let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
 			if (
 				remainingTarget * parseInt(campaign.cost_per_one) >=
-				parseInt(accounts[index].credit)
+				parseInt(accounts[index].available_credit)
 			) {
-				campagnLimit = parseInt(accounts[index].credit)
+				campagnLimit = parseInt(accounts[index].available_credit)
 			} else {
 				campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
 			}
