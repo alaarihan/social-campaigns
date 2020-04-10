@@ -70,7 +70,7 @@ async function clickAds(page, browser) {
 						for (let index = 0; index < repeateTimes; index++) {
 							try {
 								await iframe2.waitForSelector('.ytp-play-button')
-								log(`Click replay #${index+1}`)
+								log(`Click replay #${index + 1}`)
 								await iframe2.click('.ytp-play-button')
 								await iframe2.waitFor(seconds * 1000)
 							} catch (err) {

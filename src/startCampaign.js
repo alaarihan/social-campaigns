@@ -50,7 +50,7 @@ const startCampaign = async function(campaign) {
 			) {
 				campagnLimit = parseInt(accounts[index].available_credit)
 			} else {
-				campagnLimit = remainingTarget * parseInt(campaign.cost_per_one)
+				campagnLimit = Math.ceil(remainingTarget * parseInt(campaign.cost_per_one))
 			}
 
 			// Remove everything after the video ID ( because like4 site does that)
