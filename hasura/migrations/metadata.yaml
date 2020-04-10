@@ -1,0 +1,161 @@
+version: 2
+tables:
+- table:
+    schema: public
+    name: account
+  array_relationships:
+  - name: like_campaigns
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          schema: public
+          name: like_campaign
+  - name: logs
+    using:
+      foreign_key_constraint_on:
+        column: account_id
+        table:
+          schema: public
+          name: log
+  computed_fields:
+  - name: available_credit
+    definition:
+      function:
+        schema: public
+        name: available_credit
+      table_argument: null
+    comment: ""
+  event_triggers:
+  - name: keep-running
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - last_activity
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook: https://social-campaigns-run.herokuapp.com/
+  - name: keep-running2
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - last_activity
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 60
+    webhook: https://social-campaigns-runner2.herokuapp.com/
+- table:
+    schema: public
+    name: campaign
+  object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+  array_relationships:
+  - name: like_campaigns
+    using:
+      foreign_key_constraint_on:
+        column: user_compaign_id
+        table:
+          schema: public
+          name: like_campaign
+  event_triggers:
+  - name: cancel-campaign
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - status
+    retry_conf:
+      num_retries: 0
+      interval_sec: 10
+      timeout_sec: 600
+    webhook: https://social-campaigns-run.herokuapp.com/run/cancelCampaign
+    headers:
+    - value: 9j6T_wQ5SJLdP]px[aHSJLdP]pt*Q
+      name: api-key
+  - name: start-campaign
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+      update:
+        columns:
+        - status
+    retry_conf:
+      num_retries: 0
+      interval_sec: 30
+      timeout_sec: 600
+    webhook: https://social-campaigns-run.herokuapp.com/run/startCampaign
+    headers:
+    - value: 9j6T_wQ5SJLdP]px[aHSJLdP]pt*Q
+      name: api-key
+- table:
+    schema: public
+    name: campaign_type
+  is_enum: true
+- table:
+    schema: public
+    name: like_campaign
+  object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+  - name: user_campaign
+    using:
+      foreign_key_constraint_on: user_compaign_id
+- table:
+    schema: public
+    name: log
+  object_relationships:
+  - name: account
+    using:
+      foreign_key_constraint_on: account_id
+- table:
+    schema: public
+    name: setting
+- table:
+    schema: public
+    name: user
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - credit
+      - email
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+actions:
+- name: login
+  definition:
+    kind: synchronous
+    handler: https://future-bedecked-cause.glitch.me/login
+    arguments:
+    - name: username
+      type: String!
+    - name: password
+      type: String!
+    output_type: LoginPayload
+    forward_client_headers: true
+custom_types:
+  objects:
+  - name: LoginPayload
+    fields:
+    - name: accessToken
+      type: String!
+    - name: userId
+      type: Int!
+    relationships:
+    - remote_table:
+        schema: public
+        name: user
+      name: user
+      type: object
+      field_mapping:
+        userId: id
