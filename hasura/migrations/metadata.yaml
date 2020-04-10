@@ -26,29 +26,6 @@ tables:
         name: available_credit
       table_argument: null
     comment: ""
-  event_triggers:
-  - name: keep-running
-    definition:
-      enable_manual: false
-      update:
-        columns:
-        - last_activity
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook: https://social-campaigns-run.herokuapp.com/
-  - name: keep-running2
-    definition:
-      enable_manual: false
-      update:
-        columns:
-        - last_activity
-    retry_conf:
-      num_retries: 0
-      interval_sec: 10
-      timeout_sec: 60
-    webhook: https://social-campaigns-runner2.herokuapp.com/
 - table:
     schema: public
     name: campaign
