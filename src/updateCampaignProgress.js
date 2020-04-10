@@ -10,7 +10,7 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const updateCampaignProgress = async function(campaign) {
 	try {
-		if(!campaign.like_campaigns){
+		if (!campaign.like_campaigns) {
 			campaign = await getUserCampaignById(campaign.id)
 		}
 		if (campaign.like_campaigns.length < 1) return false
@@ -18,15 +18,14 @@ const updateCampaignProgress = async function(campaign) {
 			campaign.link.indexOf('&') !== -1
 				? campaign.link.substring(0, campaign.link.indexOf('&'))
 				: campaign.link
-		if(campaign.type.startsWith('YOUTUBE')){
+		if (campaign.type.startsWith('YOUTUBE')) {
 			campaignLink = getStandardYoutubeUrl(campaign.link)
 		}
 		campaign.link = campaignLink
 		var campaignProgress = 0
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
-			if(likeCampaign.status !== 'ACTIVE')
-				continue;
+			if (likeCampaign.status !== 'ACTIVE') continue
 			const account = likeCampaign.account
 			browser = await puppeteer.launch({
 				headless: runMode,
@@ -44,7 +43,10 @@ const updateCampaignProgress = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
+			await checkIfBonustoClickPuzzle(
+				page,
+				'https://www.like4like.org/user/manage-pages.php'
+			)
 			await updateCredit(page, account, false)
 
 			let campaignPageTitle = getCampaignPageTitle(campaign.type)

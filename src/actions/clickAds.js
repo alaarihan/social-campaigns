@@ -68,46 +68,50 @@ async function clickAds(page, browser) {
 						repeateTimes = Math.ceil(counterNumber / seconds) - 1
 						await iframe2.waitFor(seconds * 1000)
 						for (let index = 1; index < repeateTimes; index++) {
-							try{
+							try {
 								await iframe2.waitForSelector('.ytp-play-button')
 								log(`Click replay #${index}`)
 								await iframe2.click('.ytp-play-button')
 								await iframe2.waitFor(seconds * 1000)
-							}catch(err){
+							} catch (err) {
 								log(`Couldn't click reply ${err.message}`)
 							}
 						}
 					} else {
 						await iframe2.waitFor(counterNumber * 1000)
 					}
-					
+
 					let puzzleIframe = false
-					await iframe.waitForSelector('#cpcdiv p + iframe', {
-						timeout: 10000
-					}).then(async () => {
-						puzzleIframe = await iframe.childFrames()[1]
-						if (puzzleIframe) {
-							await clickPuzzleMap(puzzleIframe, 'video window')
-							await iframe
-								.waitForSelector('#cpcdiv + script + br + br+ div', {
-									timeout: 4000
-								})
-								.then(async () => {
-									const guessText = await iframe.evaluate(
-										() =>
-											document.querySelector('#cpcdiv + script + br + br+ div')
-												.innerText
-									)
-									log(guessText)
-								})
-								.catch(err => {
-									console.log(err)
-									log("Couldn't get the text after clicking the puzzle")
-								})
-						}
-					}).catch(async err => {
-						log(`Puzzle didn't show up! ${err.message}`)
-					})
+					await iframe
+						.waitForSelector('#cpcdiv p + iframe', {
+							timeout: 10000
+						})
+						.then(async () => {
+							puzzleIframe = await iframe.childFrames()[1]
+							if (puzzleIframe) {
+								await clickPuzzleMap(puzzleIframe, 'video window')
+								await iframe
+									.waitForSelector('#cpcdiv + script + br + br+ div', {
+										timeout: 4000
+									})
+									.then(async () => {
+										const guessText = await iframe.evaluate(
+											() =>
+												document.querySelector(
+													'#cpcdiv + script + br + br+ div'
+												).innerText
+										)
+										log(guessText)
+									})
+									.catch(err => {
+										console.log(err)
+										log("Couldn't get the text after clicking the puzzle")
+									})
+							}
+						})
+						.catch(async err => {
+							log(`Puzzle didn't show up! ${err.message}`)
+						})
 				}
 			})
 			await pages[1].close()
