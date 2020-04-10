@@ -7,7 +7,7 @@ async function updateCredit(page, account, checkBonus = true) {
 		account = await getCurrentAccount()
 	}
 	if (!page) return false
-	if(checkBonus){
+	if (checkBonus) {
 		await checkIfBonustoClickPuzzle(page)
 	}
 	const currentCredit = await page

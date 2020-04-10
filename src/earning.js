@@ -20,23 +20,29 @@ const startEarning = async function(force) {
 	if (!force) {
 		let lastCreatedAt = new Date()
 		lastCreatedAt.setMinutes(lastCreatedAt.getMinutes() - 4)
-		const lastLogsFromThisMachine = await getLogs({
-			created_at: { _gt: lastCreatedAt },
-			host_name: { _eq: hostName }
-		}, false, 1)
+		const lastLogsFromThisMachine = await getLogs(
+			{
+				created_at: { _gt: lastCreatedAt },
+				host_name: { _eq: hostName }
+			},
+			false,
+			1
+		)
 		if (lastLogsFromThisMachine && lastLogsFromThisMachine.length > 0) {
 			console.log(`Can't run earning because it seems still running already`)
 			return false
 		}
 	}
-	const browser = await puppeteer.launch({
-		headless: runMode,
-		defaultViewport: null,
-		args: ['--no-sandbox', '--disable-features=site-per-process']
-	}).catch(err => {
-		log(`Couldn't lounch the browser ${err.message}`)
-		return err
-	})
+	const browser = await puppeteer
+		.launch({
+			headless: runMode,
+			defaultViewport: null,
+			args: ['--no-sandbox', '--disable-features=site-per-process']
+		})
+		.catch(err => {
+			log(`Couldn't lounch the browser ${err.message}`)
+			return err
+		})
 	try {
 		await updateInactiveAccountsState()
 		let page = await browser.pages()
@@ -55,9 +61,7 @@ const startEarning = async function(force) {
 		log('Going to earn page')
 		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 		await page.waitFor(2000)
-		if (
-			page.url() === 'https://www.like4like.org/login/verify-email.php'
-		) {
+		if (page.url() === 'https://www.like4like.org/login/verify-email.php') {
 			log('Need email verification!')
 			await changeAccountStatus(account.id, 'NEED_EMAIL_VERIFY')
 			await browser.close()
@@ -101,7 +105,7 @@ const startEarning = async function(force) {
 			let errorText = false
 			await page.click('#load-more-links').catch(async error => {
 				const bonusClicked = await checkIfBonustoClickPuzzle(page)
-				if(!bonusClicked) {
+				if (!bonusClicked) {
 					log(error.message, 'ERROR')
 					errorText = await page.evaluate(
 						() => document.querySelector('#error-text').innerText
@@ -112,10 +116,12 @@ const startEarning = async function(force) {
 				log(`Error text: ${errorText}`, 'ERROR')
 				if (errorText.indexOf('suspended') !== -1) {
 					let statusDuration = errorText.substring(
-						errorText.lastIndexOf("the next ") + 9, 
-						errorText.lastIndexOf(" minutes.")
-					);
-					statusDuration = statusDuration ?  parseInt(statusDuration) + 10 : 60 * 6
+						errorText.lastIndexOf('the next ') + 9,
+						errorText.lastIndexOf(' minutes.')
+					)
+					statusDuration = statusDuration
+						? parseInt(statusDuration) + 10
+						: 60 * 6
 					await changeAccountStatus(account.id, 'YV_SUSPENDED', statusDuration)
 					if (browser) {
 						await browser.close()

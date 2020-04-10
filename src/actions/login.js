@@ -14,7 +14,7 @@ async function login(page, account, changeStatus = true) {
 		await log('No offline accounts available')
 		return false
 	}
-	if(changeStatus){
+	if (changeStatus) {
 		await changeAccountStatus(account.id, 'ONLINE')
 		updateLastActivity(account.id)
 	}
@@ -34,10 +34,10 @@ async function login(page, account, changeStatus = true) {
 			const errorText = await page.evaluate(
 				() => document.querySelector('#h3').innerText
 			)
-			if(errorText){
+			if (errorText) {
 				log(`Login error message: ${errorText}`)
 			}
-			
+
 			let statusDuration = null
 			let accountStatus = null
 			if (errorText.indexOf('deactivated') !== -1) {

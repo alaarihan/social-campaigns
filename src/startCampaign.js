@@ -3,14 +3,19 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const createLikeCampaign = require('./apiQueries/createLikeCampaign')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
-const { login, checkIfBonustoClickPuzzle, removeCampaignLink, updateCredit } = require('./actions')
+const {
+	login,
+	checkIfBonustoClickPuzzle,
+	removeCampaignLink,
+	updateCredit
+} = require('./actions')
 import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts(null, { credit: 'desc' })
+		const accounts = await getAccounts(null, { available_credit: 'desc' })
 		if (accounts.length < 1) return false
 		var totalCampaingnsTarget = 0
 		var createdLikeCampaigns = []
@@ -31,7 +36,10 @@ const startCampaign = async function(campaign) {
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(page, 'https://www.like4like.org/user/manage-pages.php')
+			await checkIfBonustoClickPuzzle(
+				page,
+				'https://www.like4like.org/user/manage-pages.php'
+			)
 			await updateCredit(page, accounts[index], false)
 			let campagnLimit = 0
 			let remainingTarget = parseInt(campaign.target) - totalCampaingnsTarget
@@ -49,7 +57,7 @@ const startCampaign = async function(campaign) {
 				campaign.link.indexOf('&') !== -1
 					? campaign.link.substring(0, campaign.link.indexOf('&'))
 					: campaign.link
-			if(campaign.type.startsWith('YOUTUBE')){
+			if (campaign.type.startsWith('YOUTUBE')) {
 				campaignLink = getStandardYoutubeUrl(campaign.link)
 			}
 			const likeCampaign = {
@@ -117,9 +125,7 @@ const startCampaign = async function(campaign) {
 					var selectorID = jQuery(
 						`tr[id^="links"] span[id^="links-tdlink"]:contains('${likeCampaign.link}')`
 					).attr('id')
-					return selectorID
-						? selectorID.substring('links-tdlink'.length)
-						: ''
+					return selectorID ? selectorID.substring('links-tdlink'.length) : ''
 				}, likeCampaign)
 				.catch(error => {
 					log(error.message)
@@ -177,11 +183,14 @@ const startCampaign = async function(campaign) {
 				name: `#${index + 1} for user campaign #${campaign.id} in account ${
 					accounts[index].username
 				}`,
-				limit: Math.ceil(parseInt(campagnLimit) / parseInt(campaign.cost_per_one)),
+				limit: Math.ceil(
+					parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
+				),
 				user_compaign_id: campaign.id,
 				account_id: accounts[index].id,
 				status: 'ACTIVE',
-				type: campaign.type
+				type: campaign.type,
+				cost_per_one: campaign.cost_per_one
 			})
 			createdLikeCampaigns.push(createdLikeCampaign)
 			if (totalCampaingnsTarget >= parseInt(campaign.target)) {
