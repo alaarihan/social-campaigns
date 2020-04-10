@@ -82,6 +82,16 @@ const cancelCampaign = async function(campaign) {
 			})
 		}
 		log('Done!')
+		if (
+			campaign.repeat &&
+			(campaign.repeat === -1 ||
+				(campaign.repeat > 0 && campaign.repeat > campaign.repeated))
+		) {
+			await updateUserCampaign(campaign.id, {
+				status: 'PENDING',
+				repeated: campaign.repeated + 1
+			})
+		}
 		return updatedUserCampaignLikeCampaigns
 	} catch (err) {
 		if (browser) {

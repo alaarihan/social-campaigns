@@ -6,6 +6,7 @@ const startCampaign = require('./startCampaign')
 const cancelCampaign = require('./cancelCampaign')
 const updateCampaignProgress = require('./updateCampaignProgress')
 const updateActiveCampaignsProgress = require('./updateActiveCampaignsProgress')
+const deleteLogs = require('./apiQueries/deleteLogs')
 
 const app = express()
 
@@ -69,7 +70,13 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	)
 		return next(ExpressError(400, 'Campaign info is required!'))
 	const campaign = req.body.event.data.new
-	if (campaign.status !== 'CANCELED') return res.send('Nothing to do!')
+	if (
+		campaign.status !== 'CANCELED' &&
+		(campaign.status !== 'COMPLETED' ||
+			campaign.repeat === 0 ||
+			campaign.repeat >= campaign.repeated)
+	)
+		return res.send('Nothing to do!')
 	const canceledCampaigns = await cancelCampaign(campaign)
 	if (canceledCampaigns instanceof Error) {
 		return next(ExpressError(400, canceledCampaigns.message))
@@ -95,6 +102,13 @@ app.get('/run/updateActiveCampaignsProgress', async function(req, res, next) {
 		return next(ExpressError(400, updatedCampaigns.message))
 	}
 	res.send(updatedCampaigns)
+})
+
+app.get('/run/cleanDB', async function(req, res, next) {
+	let beforeDate = new Date()
+	beforeDate.setMinutes(beforeDate.getMinutes() - 100)
+	const deletedRows = await deleteLogs({ created_at: { _lt: beforeDate } })
+	res.send(JSON.stringify(deletedRows))
 })
 
 app.listen({ port: process.env.PORT || 4001 }, () =>

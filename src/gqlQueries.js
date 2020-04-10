@@ -57,6 +57,8 @@ const gqlQueries = {
       link
       type
       overwrite
+      repeat
+      repeated
       like_campaigns{
         id
         progress
@@ -98,6 +100,11 @@ const gqlQueries = {
       account_id
       host_name
       created_at
+    }
+  }`,
+	deleteLogsGql: `mutation delete_log($where: log_bool_exp!){
+    delete_log(where: $where) {
+      affected_rows
     }
   }`
 }
