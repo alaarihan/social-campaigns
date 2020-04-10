@@ -110,7 +110,7 @@ async function clickAds(page, browser) {
 							}
 						})
 						.catch(async err => {
-							log(`Puzzle didn't show up! ${err.message}`)
+							log(`Puzzle didn't show up! video url: ${iframe2.url()}`)
 						})
 				}
 			})
