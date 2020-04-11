@@ -76,7 +76,7 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 		campaign.status === 'CANCEL' ||
 		(campaign.status === 'COMPLETED' &&
 			campaign.repeat !== 0 &&
-			campaign.repeat < campaign.repeated) ||
+			campaign.repeat > campaign.repeated) ||
 		(campaign.status === 'COMPLETED' && campaign.repeat === -1)
 	) {
 		canceledCampaigns = await cancelCampaign(campaign)
