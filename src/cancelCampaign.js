@@ -66,7 +66,7 @@ const cancelCampaign = async function(campaign) {
 			await removeCampaignLink(page, campaignLink)
 			await browser.close()
 		}
-		
+
 		let userCampaignStatus = 'CANCELED'
 		let userCampaignRepeated = campaign.repeated
 		if (
@@ -81,8 +81,9 @@ const cancelCampaign = async function(campaign) {
 			status: userCampaignStatus,
 			repeated: userCampaignRepeated
 		})
-		if(campaign.status === 'CANCEL'){
-			const updatedUserCampaignLikeCampaigns = updatedUserCampaign.like_campaigns
+		if (campaign.status === 'CANCEL') {
+			const updatedUserCampaignLikeCampaigns =
+				updatedUserCampaign.like_campaigns
 			for (
 				let index = 0;
 				index < updatedUserCampaignLikeCampaigns.length;
