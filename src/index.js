@@ -70,14 +70,20 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	)
 		return next(ExpressError(400, 'Campaign info is required!'))
 	const campaign = req.body.event.data.new
+
+	let canceledCampaigns = null
 	if (
-		campaign.status !== 'CANCELED' &&
-		(campaign.status !== 'COMPLETED' ||
-			campaign.repeat === 0 ||
-			campaign.repeat >= campaign.repeated)
-	)
+		campaign.status === 'CANCEL' ||
+		(campaign.status === 'COMPLETED' &&
+			campaign.repeat !== 0 &&
+			campaign.repeat > campaign.repeated) ||
+		(campaign.status === 'COMPLETED' && campaign.repeat === -1)
+	) {
+		canceledCampaigns = await cancelCampaign(campaign)
+	} else {
 		return res.send('Nothing to do!')
-	const canceledCampaigns = await cancelCampaign(campaign)
+	}
+
 	if (canceledCampaigns instanceof Error) {
 		return next(ExpressError(400, canceledCampaigns.message))
 	}
