@@ -3,7 +3,10 @@ const getUserCampaigns = require('./apiQueries/getUserCampaigns')
 const log = require('./apiQueries/log')
 const updateActiveCampaignsProgress = async function() {
 	try {
-		const campaigns = await getUserCampaigns({ status: { _eq: 'ACTIVE' } })
+		const campaigns = await getUserCampaigns({
+			status: { _in: ['ACTIVE', 'PARTIALLY_ACTIVE'] },
+			like_campaigns: { status: { _eq: 'ACTIVE' } }
+		})
 		if (campaigns && campaigns.length) {
 			let updatedCampaigns = []
 			await asyncForEach(campaigns, async campaign => {
