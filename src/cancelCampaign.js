@@ -84,17 +84,19 @@ const cancelCampaign = async function(campaign) {
 			repeated: userCampaignRepeated,
 			progress: userCampaignProgress
 		})
-		if(campaign.status === 'CANCEL'){
-			const updatedUserCampaignLikeCampaigns = updatedUserCampaign.like_campaigns
-			for (
-				let index = 0;
-				index < updatedUserCampaignLikeCampaigns.length;
-				index++
-			) {
-				await updateLikeCampaign(updatedUserCampaignLikeCampaigns[index].id, {
-					status: 'CANCELED'
-				})
-			}
+		let likeCampaignStatus = 'CANCELED'
+		if(campaign.status === 'COMPLETED'){
+			likeCampaignStatus = 'REMOVED'
+		}
+		const updatedUserCampaignLikeCampaigns = updatedUserCampaign.like_campaigns
+		for (
+			let index = 0;
+			index < updatedUserCampaignLikeCampaigns.length;
+			index++
+		) {
+			await updateLikeCampaign(updatedUserCampaignLikeCampaigns[index].id, {
+				status: likeCampaignStatus
+			})
 		}
 		log('Done!')
 		return updatedUserCampaignLikeCampaigns
