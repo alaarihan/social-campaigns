@@ -86,7 +86,7 @@ const updateCampaignProgress = async function(campaign) {
 				let likeCampaignVariables = {
 					progress: parseInt(likeCampaignProgress)
 				}
-				if (parseInt(likeCampaignProgress) >= parseInt(likeCampaign.limit)) {
+				if (parseInt(likeCampaignProgress)+1 >= parseInt(likeCampaign.limit)) {
 					likeCampaignVariables.status = 'COMPLETED'
 				}
 				await updateLikeCampaign(likeCampaign.id, likeCampaignVariables)
@@ -97,7 +97,7 @@ const updateCampaignProgress = async function(campaign) {
 		let variables = {
 			progress: parseInt(campaignProgress)
 		}
-		if (parseInt(campaignProgress) >= parseInt(campaign.target)) {
+		if (parseInt(campaignProgress)+1 >= parseInt(campaign.target)) {
 			variables.status = 'COMPLETED'
 		}
 		const updatedUserCampaign = await updateUserCampaign(campaign.id, variables)
