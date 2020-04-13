@@ -25,8 +25,12 @@ const updateCampaignProgress = async function(campaign) {
 		var campaignProgress = 0
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
-			if (likeCampaign.status !== 'ACTIVE' && likeCampaign.status !== 'COMPLETED') continue
-			if(likeCampaign.status === 'COMPLETED'){
+			if (
+				likeCampaign.status !== 'ACTIVE' &&
+				likeCampaign.status !== 'COMPLETED'
+			)
+				continue
+			if (likeCampaign.status === 'COMPLETED') {
 				campaignProgress += likeCampaign.progress
 				continue
 			}
