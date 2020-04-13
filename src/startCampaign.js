@@ -48,7 +48,10 @@ const startCampaign = async function(campaign) {
 				remainingTarget * parseInt(campaign.cost_per_one) >=
 				parseInt(accounts[index].available_credit)
 			) {
-				campagnLimit = parseInt(accounts[index].available_credit)
+				campagnLimit =
+					parseInt(accounts[index].available_credit) -
+					(parseInt(accounts[index].available_credit) %
+						parseInt(campaign.cost_per_one))
 			} else {
 				campagnLimit = Math.ceil(
 					remainingTarget * parseInt(campaign.cost_per_one)
