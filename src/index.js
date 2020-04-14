@@ -7,6 +7,7 @@ const cancelCampaign = require('./cancelCampaign')
 const updateCampaignProgress = require('./updateCampaignProgress')
 const updateActiveCampaignsProgress = require('./updateActiveCampaignsProgress')
 const deleteLogs = require('./apiQueries/deleteLogs')
+const getSetting = require('./apiQueries/getSetting')
 
 const app = express()
 
