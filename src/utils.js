@@ -6,6 +6,15 @@ const gqlClient = new GraphQLClient(process.env.HASURA_URI, {
 	}
 })
 
+const loginBlockedStatuses = [
+	'BLOCKED',
+	'DISABLED',
+	'SUSPENDED',
+	'DEACTIVATED',
+	'NEED_EMAIL_VERIFY'
+]
+
 module.exports = {
-	gqlClient
+	gqlClient,
+	loginBlockedStatuses
 }

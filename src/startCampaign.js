@@ -33,7 +33,6 @@ const startCampaign = async function(campaign) {
 				return false
 			}
 			await login(page, accounts[index], false)
-			if (!page) return false
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
@@ -48,7 +47,10 @@ const startCampaign = async function(campaign) {
 				remainingTarget * parseInt(campaign.cost_per_one) >=
 				parseInt(accounts[index].available_credit)
 			) {
-				campagnLimit = parseInt(accounts[index].available_credit)
+				campagnLimit =
+					parseInt(accounts[index].available_credit) -
+					(parseInt(accounts[index].available_credit) %
+						parseInt(campaign.cost_per_one))
 			} else {
 				campagnLimit = Math.ceil(
 					remainingTarget * parseInt(campaign.cost_per_one)
@@ -186,7 +188,7 @@ const startCampaign = async function(campaign) {
 				name: `#${index + 1} for user campaign #${campaign.id} in account ${
 					accounts[index].username
 				}`,
-				limit: Math.floor(
+				limit: Math.ceil(
 					parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
 				),
 				user_compaign_id: campaign.id,

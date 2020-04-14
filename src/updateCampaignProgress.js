@@ -4,6 +4,7 @@ const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
 const { login, checkIfBonustoClickPuzzle, updateCredit } = require('./actions')
+const { loginBlockedStatuses } = require('./utils')
 import { getCampaignPageTitle, getStandardYoutubeUrl } from './actions/helpers'
 
 var runMode = process.env.HEADLESS === 'no' ? false : true
@@ -14,6 +15,7 @@ const updateCampaignProgress = async function(campaign) {
 			campaign = await getUserCampaignById(campaign.id)
 		}
 		if (campaign.like_campaigns.length < 1) return false
+		const totalLikeCampaigns = campaign.like_campaigns.length
 		let campaignLink =
 			campaign.link.indexOf('&') !== -1
 				? campaign.link.substring(0, campaign.link.indexOf('&'))
@@ -22,15 +24,33 @@ const updateCampaignProgress = async function(campaign) {
 			campaignLink = getStandardYoutubeUrl(campaign.link)
 		}
 		campaign.link = campaignLink
-		var campaignProgress = 0
+		let campaignProgress = 0
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
-			if (likeCampaign.status !== 'ACTIVE' && likeCampaign.status !== 'COMPLETED') continue
-			if(likeCampaign.status === 'COMPLETED'){
+			if (
+				likeCampaign.status !== 'ACTIVE' &&
+				likeCampaign.status !== 'COMPLETED'
+			) {
+				continue
+			}
+			if (likeCampaign.status === 'COMPLETED') {
 				campaignProgress += likeCampaign.progress
 				continue
 			}
 			const account = likeCampaign.account
+			if (loginBlockedStatuses.includes(account.status)) {
+				log(
+					`Campaign #${campaign.id} has like campaign in account ${account.username} whtch has status ${account.status}`
+				)
+				if (campaign.repeat === -1 || campaign.repeat > campaign.repeated) {
+					log(`Complete the campaign to be repeated`)
+					const updatedUserCampaign = await updateUserCampaign(campaign.id, {
+						status: 'COMPLETED'
+					})
+					return updatedUserCampaign
+				}
+				continue
+			}
 			browser = await puppeteer.launch({
 				headless: runMode,
 				defaultViewport: null,
@@ -43,7 +63,6 @@ const updateCampaignProgress = async function(campaign) {
 				return false
 			}
 			await login(page, account, false)
-			if (!page) return false
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
