@@ -32,6 +32,11 @@ const startEarning = async function(force) {
 			console.log(`Can't run earning because it seems still running already`)
 			return false
 		}
+		let earning_enabled = await getSetting('enable_earning')
+		if (earning_enabled !== 'yes') {
+			console.log(`Can't run earning because it's disabled`)
+			return false
+		}
 	}
 	const browser = await puppeteer
 		.launch({
@@ -91,12 +96,12 @@ const startEarning = async function(force) {
 				console.log('')
 			})
 		await updateCredit(page, account, false)
-		let loopNumber = await getSetting('loopNumber')
-		if (!loopNumber || !loopNumber.value) {
-			loopNumber = { value: 3 }
+		let earning_loop_number = await getSetting('earning_loop_number')
+		if (!earning_loop_number || !earning_loop_number) {
+			earning_loop_number = 3
 		}
-		log(`Start the loop ${loopNumber.value} total`)
-		for (let index = 0; index < loopNumber.value; index++) {
+		log(`Start the loop ${earning_loop_number} total`)
+		for (let index = 0; index < earning_loop_number; index++) {
 			await page.waitFor(1000)
 			// await removeAntibot(page)
 			// await page.waitFor(2000)

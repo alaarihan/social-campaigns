@@ -7,6 +7,7 @@ const cancelCampaign = require('./cancelCampaign')
 const updateCampaignProgress = require('./updateCampaignProgress')
 const updateActiveCampaignsProgress = require('./updateActiveCampaignsProgress')
 const deleteLogs = require('./apiQueries/deleteLogs')
+const getSetting = require('./apiQueries/getSetting')
 
 const app = express()
 
@@ -111,6 +112,12 @@ app.get('/run/updateActiveCampaignsProgress', async function(req, res, next) {
 })
 
 app.get('/run/cleanDB', async function(req, res, next) {
+	let clean_db_enabled = await getSetting('enable_clean_db')
+	if (clean_db_enabled !== 'yes') {
+		console.log(`Can't run clean db because it's disabled`)
+		res.send(JSON.stringify('Clean DB is disabled!'))
+		return false
+	}
 	let beforeDate = new Date()
 	beforeDate.setMinutes(beforeDate.getMinutes() - 100)
 	const deletedRows = await deleteLogs({ created_at: { _lt: beforeDate } })
