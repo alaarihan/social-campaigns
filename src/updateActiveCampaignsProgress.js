@@ -8,12 +8,10 @@ const updateActiveCampaignsProgress = async function() {
 			like_campaigns: { status: { _eq: 'ACTIVE' } }
 		})
 		if (campaigns && campaigns.length) {
-			let updatedCampaigns = []
-			await asyncForEach(campaigns, async campaign => {
-				const updatedCampaign = await updateCampaignProgress(campaign)
-				updatedCampaigns.push(updatedCampaign)
+			asyncForEach(campaigns, async campaign => {
+				await updateCampaignProgress(campaign)
 			})
-			return updatedCampaigns
+			return `Checking progress for ${ campaigns }`
 		} else {
 			return 'No Active campaigns found'
 		}
