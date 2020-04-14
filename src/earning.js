@@ -76,14 +76,18 @@ const startEarning = async function(force) {
 		await page
 			.waitForSelector('.earn_pages_button', { timeout: 7000 })
 			.catch(async error => {
-				log('Click load more button')
-				await page.click('#load-more-links').catch(async error => {
-					log("Couldn't click load more button!", 'ERROR')
-					await page.goto(
-						'https://www.like4like.org/user/earn-youtube-video.php'
-					)
-					await page.waitFor(2000)
-				})
+				log('Refresh because no video links found')
+				await page.goto('https://www.like4like.org/')
+				await page.waitFor(4000)
+				await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+				await checkIfBonustoClickPuzzle(page)
+				// await page.click('#load-more-links').catch(async error => {
+				// 	log("Couldn't click load more button!", 'ERROR')
+				// 	await page.goto(
+				// 		'https://www.like4like.org/user/earn-youtube-video.php'
+				// 	)
+				// 	await page.waitFor(2000)
+				// })
 			})
 		await page
 			.waitForSelector('#refcred a', { timeout: 1000, visible: true })
@@ -106,17 +110,22 @@ const startEarning = async function(force) {
 			// await removeAntibot(page)
 			// await page.waitFor(2000)
 			await clickAds(page, browser)
-			log('Click load more button')
+			log(`#${index + 1} Refresh because no more video links found`)
+			await page.goto('https://www.like4like.org/')
+			await page.waitFor(4000)
+			await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
 			let errorText = false
-			await page.click('#load-more-links').catch(async error => {
-				const bonusClicked = await checkIfBonustoClickPuzzle(page)
-				if (!bonusClicked) {
-					log(error.message, 'ERROR')
-					errorText = await page.evaluate(
-						() => document.querySelector('#error-text').innerText
-					)
-				}
-			})
+			await page
+				.waitForSelector('#load-more-links', { timeout: 7000 })
+				.catch(async error => {
+					const bonusClicked = await checkIfBonustoClickPuzzle(page)
+					if (!bonusClicked) {
+						log(error.message, 'ERROR')
+						errorText = await page.evaluate(
+							() => document.querySelector('#error-text').innerText
+						)
+					}
+				})
 			if (errorText) {
 				log(`Error text: ${errorText}`, 'ERROR')
 				if (errorText.indexOf('suspended') !== -1) {
