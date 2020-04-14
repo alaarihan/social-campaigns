@@ -1,7 +1,13 @@
 const updateCampaignProgress = require('./updateCampaignProgress')
 const getUserCampaigns = require('./apiQueries/getUserCampaigns')
 const log = require('./apiQueries/log')
+const getSetting = require('./apiQueries/getSetting')
 const updateActiveCampaignsProgress = async function() {
+	let update_progress_enabled = await getSetting('enable_update_progress')
+	if (update_progress_enabled !== 'yes') {
+		console.log(`Can't update campaigns progress because it's disabled`)
+		return false
+	}
 	try {
 		const campaigns = await getUserCampaigns({
 			status: { _in: ['ACTIVE', 'PARTIALLY_ACTIVE'] },

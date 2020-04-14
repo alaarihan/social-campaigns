@@ -11,7 +11,7 @@ const getSetting = async function(name) {
 			if (data.setting.length < 1) {
 				return false
 			}
-			return data.setting[0]
+			return data.setting[0].value
 		})
 		.catch(function(error) {
 			log("Couldn't get setting " + error.message, 'ERROR')
