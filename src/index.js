@@ -114,7 +114,8 @@ app.get('/run/updateActiveCampaignsProgress', async function(req, res, next) {
 app.get('/run/cleanDB', async function(req, res, next) {
 	let clean_db_enabled = await getSetting('enable_clean_db')
 	if (clean_db_enabled !== 'yes') {
-		console.log(`Can't update campaigns progress because it's disabled`)
+		console.log(`Can't run clean db because it's disabled`)
+		res.send(JSON.stringify('Clean DB is disabled!'))
 		return false
 	}
 	let beforeDate = new Date()
