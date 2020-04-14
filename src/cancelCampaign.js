@@ -21,6 +21,7 @@ const cancelCampaign = async function(campaign) {
 			}
 		})
 		if (accounts.length < 1) return false
+		let loginBlockedUsersIds = []
 		for (let index = 0; index < accounts.length; index++) {
 			browser = await puppeteer.launch({
 				headless: runMode,
@@ -33,7 +34,6 @@ const cancelCampaign = async function(campaign) {
 				await browser.close()
 				return false
 			}
-			let loginBlockedUsersIds = []
 			try {
 				await login(page, accounts[index], false)
 			} catch (err) {
