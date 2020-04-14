@@ -33,7 +33,14 @@ const cancelCampaign = async function(campaign) {
 				await browser.close()
 				return false
 			}
-			await login(page, accounts[index], false)
+			let loginBlockedUsersIds = []
+			try {
+				await login(page, accounts[index], false)
+			} catch (err) {
+				loginBlockedUsersIds.push(accounts[index].id)
+				await browser.close()
+				continue
+			}
 
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
@@ -94,6 +101,15 @@ const cancelCampaign = async function(campaign) {
 			index < updatedUserCampaignLikeCampaigns.length;
 			index++
 		) {
+			if (updatedUserCampaignLikeCampaigns[index].status === 'COMPLETED') {
+				likeCampaignStatus = 'REMOVED'
+			} else if (
+				loginBlockedUsersIds.includes(
+					updatedUserCampaignLikeCampaigns[index].account_id
+				)
+			) {
+				likeCampaignStatus = 'TO_BE_REMOVED'
+			}
 			await updateLikeCampaign(updatedUserCampaignLikeCampaigns[index].id, {
 				status: likeCampaignStatus
 			})

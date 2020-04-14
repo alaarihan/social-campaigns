@@ -1,5 +1,5 @@
 const { getNewAccount } = require('../setAccount')
-
+const { loginBlockedStatuses } = require('../utils')
 const {
 	updateLastActivity,
 	changeAccountStatus,
@@ -7,6 +7,15 @@ const {
 } = require('../apiQueries')
 async function login(page, account, changeStatus = true) {
 	let accountSpecifyed = account ? true : false
+	if (
+		account &&
+		account.status &&
+		loginBlockedStatuses.includes(account.status)
+	) {
+		const accountError = `Can't login to account #${account.id} because its status is ${account.status}`
+		log(accountError, 'ERROR')
+		throw new Error(accountError)
+	}
 	if (!account) {
 		account = await getNewAccount()
 	}

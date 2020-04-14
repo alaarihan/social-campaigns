@@ -81,6 +81,7 @@ const gqlQueries = {
         id
         like_campaigns(where: { status: { _in: ["ACTIVE", "COMPLETED"] } }){
           id
+          account_id
         }
         }
     }
