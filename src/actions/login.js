@@ -39,15 +39,15 @@ async function login(page, account, changeStatus = true) {
 			}
 			let statusDuration = null
 			let accountStatus = null
-			page.waitForSelector('#g-recaptcha_text', {
-				timeout: 4000
-			}).then(async () => {
-				accountStatus = 'CAPTCHA_SHOWUP'
-				statusDuration = 61
-			})
-			.catch(async err => {
-
-			})
+			page
+				.waitForSelector('#g-recaptcha_text', {
+					timeout: 4000
+				})
+				.then(async () => {
+					accountStatus = 'CAPTCHA_SHOWUP'
+					statusDuration = 61
+				})
+				.catch(async err => {})
 			if (errorText.indexOf('deactivated') !== -1) {
 				accountStatus = 'DEACTIVATED'
 			} else if (errorText.indexOf('blocked') !== -1) {

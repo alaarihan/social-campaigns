@@ -30,7 +30,7 @@ const updateCampaignProgress = async function(campaign) {
 			if (
 				likeCampaign.status !== 'ACTIVE' &&
 				likeCampaign.status !== 'COMPLETED'
-			){
+			) {
 				continue
 			}
 			if (likeCampaign.status === 'COMPLETED') {
@@ -38,11 +38,15 @@ const updateCampaignProgress = async function(campaign) {
 				continue
 			}
 			const account = likeCampaign.account
-			if(loginBlockedStatuses.includes(account.status)){
-				log(`Campaign #${campaign.id} has like campaign in account ${account.username} whtch has status ${account.status}`)
-				if(campaign.repeat === -1 || campaign.repeat > campaign.repeated){
+			if (loginBlockedStatuses.includes(account.status)) {
+				log(
+					`Campaign #${campaign.id} has like campaign in account ${account.username} whtch has status ${account.status}`
+				)
+				if (campaign.repeat === -1 || campaign.repeat > campaign.repeated) {
 					log(`Complete the campaign to be repeated`)
-					const updatedUserCampaign = await updateUserCampaign(campaign.id, {status: 'COMPLETED'})
+					const updatedUserCampaign = await updateUserCampaign(campaign.id, {
+						status: 'COMPLETED'
+					})
 					return updatedUserCampaign
 				}
 				continue

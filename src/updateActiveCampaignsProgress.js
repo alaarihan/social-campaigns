@@ -11,7 +11,7 @@ const updateActiveCampaignsProgress = async function() {
 			asyncForEach(campaigns, async campaign => {
 				await updateCampaignProgress(campaign)
 			})
-			return `Checking progress for ${ campaigns }`
+			return `Checking progress for ${campaigns}`
 		} else {
 			return 'No Active campaigns found'
 		}

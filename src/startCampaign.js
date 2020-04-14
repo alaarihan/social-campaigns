@@ -33,7 +33,6 @@ const startCampaign = async function(campaign) {
 				return false
 			}
 			await login(page, accounts[index], false)
-			if (!page) return false
 			log('Going to manage pages')
 			await page.goto('https://www.like4like.org/user/manage-pages.php')
 			await page.waitFor(2000)
