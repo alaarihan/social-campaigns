@@ -118,8 +118,9 @@ app.get('/run/cleanDB', async function(req, res, next) {
 		res.send(JSON.stringify('Clean DB is disabled!'))
 		return false
 	}
+	let keep_logs_hours = await getSetting('keep_logs_hours')
 	let beforeDate = new Date()
-	beforeDate.setMinutes(beforeDate.getMinutes() - 100)
+	beforeDate.setMinutes(beforeDate.getMinutes() - (keep_logs_hours * 60))
 	const deletedRows = await deleteLogs({ created_at: { _lt: beforeDate } })
 	res.send(JSON.stringify(deletedRows))
 })
