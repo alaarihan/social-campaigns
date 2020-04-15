@@ -1,5 +1,5 @@
 const { getCurrentAccount } = require('../setAccount')
-const { log, updateLastActivity } = require('../apiQueries')
+const { log, updateLastActivity, getSetting } = require('../apiQueries')
 const clickPuzzleMap = require('./clickPuzzleMap')
 const updateCredit = require('./updateCredit')
 
@@ -16,6 +16,10 @@ async function clickAds(page, browser) {
 	let clickAdsloop = 1
 	while (clickableAds > 0) {
 		try {
+			const earning_enabled = await getSetting('enable_earning')
+			if (earning_enabled !== 'yes') {
+				throw new Error(`Can't run earning because it's disabled`)
+			}
 			log(`Click to view new video #${clickAdsloop}`)
 			clickAdsloop++
 			await page.click('.earn_pages_button:first-child')
