@@ -25,30 +25,31 @@ async function clickAds(page, browser) {
 			await page.click('.earn_pages_button:first-child')
 			await page.waitFor(2000)
 			const pages = await browser.pages()
-			await pages[1].waitForSelector('iframe')
-			const iframe = await pages[1].frames()[1]
-			await iframe.waitForSelector('#player')
-			let counterText = await iframe.evaluate(
+			const videoWindow = pages[1]
+			await videoWindow.waitForSelector('iframe')
+			const parentIframe = await videoWindow.frames()[1]
+			await parentIframe.waitForSelector('#player')
+			let counterText = await parentIframe.evaluate(
 				() => document.querySelector('#counter').parentElement.innerText
 			)
 			let counterNumber = parseInt(
 				counterText.substring(counterText.indexOf('/') + 2).slice(0, -8)
 			)
 			log(`Required play time: ${counterNumber} seconds`)
-			await iframe
+			await parentIframe
 				.waitForSelector('iframe', { timeout: 10000 })
 				.catch(async err => {
-					await pages[1].close()
+					await videoWindow.close()
 					throw new Error(`Couldn't find video frame! ${err.message}`)
 				})
-			const iframe2 = await iframe.childFrames()[0]
-			if (!iframe2) {
+			const youtubeIframe = await parentIframe.childFrames()[0]
+			if (!youtubeIframe) {
 				throw new Error(`Couldn't find youtube frame!`)
 			}
-			await iframe2.waitForSelector('.ytp-large-play-button')
-			await iframe2.click('.ytp-large-play-button')
-			await iframe2.waitFor(8000).then(async () => {
-				const videoDuration = await iframe2.evaluate(
+			await youtubeIframe.waitForSelector('.ytp-large-play-button')
+			await youtubeIframe.click('.ytp-large-play-button')
+			await youtubeIframe.waitFor(8000).then(async () => {
+				const videoDuration = await youtubeIframe.evaluate(
 					() => document.querySelector('.ytp-time-duration').innerText
 				)
 				log(`Video duration: ${videoDuration}`)
@@ -58,7 +59,7 @@ async function clickAds(page, browser) {
 					seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2] - 1
 				}
 
-				counterText = await iframe.evaluate(
+				counterText = await parentIframe.evaluate(
 					() => document.querySelector('#counter').parentElement.innerText
 				)
 				let currentCounterNumber = parseInt(
@@ -70,36 +71,36 @@ async function clickAds(page, browser) {
 					let repeateTimes = false
 					if (seconds < counterNumber) {
 						repeateTimes = Math.ceil(counterNumber / seconds) - 1
-						await iframe2.waitFor(seconds * 1000)
+						await videoWindow.waitFor(seconds * 1000)
 						for (let index = 0; index < repeateTimes; index++) {
 							try {
-								await iframe2.waitForSelector('.ytp-play-button')
+								await youtubeIframe.waitForSelector('.ytp-play-button')
 								log(`Click replay #${index + 1}`)
-								await iframe2.click('.ytp-play-button')
-								await iframe2.waitFor(seconds * 1000)
+								await youtubeIframe.click('.ytp-play-button')
+								await videoWindow.waitFor(seconds * 1000)
 							} catch (err) {
 								log(`Couldn't click reply ${err.message}`)
 							}
 						}
 					} else {
-						await iframe2.waitFor(counterNumber * 1000)
+						await videoWindow.waitFor(counterNumber * 1000)
 					}
 
 					let puzzleIframe = false
-					await iframe
-						.waitForSelector('#cpcdiv p + iframe', {
+					await parentIframe
+						.waitForSelector('#cpcdiv iframe', {
 							timeout: 10000
 						})
 						.then(async () => {
-							puzzleIframe = await iframe.childFrames()[1]
+							puzzleIframe = await parentIframe.childFrames()[1]
 							if (puzzleIframe) {
 								await clickPuzzleMap(puzzleIframe, 'video window')
-								await iframe
+								await parentIframe
 									.waitForSelector('#cpcdiv + script + br + br+ div', {
 										timeout: 4000
 									})
 									.then(async () => {
-										const guessText = await iframe.evaluate(
+										const guessText = await parentIframe.evaluate(
 											() =>
 												document.querySelector(
 													'#cpcdiv + script + br + br+ div'
@@ -114,11 +115,11 @@ async function clickAds(page, browser) {
 							}
 						})
 						.catch(async err => {
-							log(`Puzzle didn't show up! video url: ${iframe2.url()}`)
+							log(`Puzzle didn't show up! video url: ${youtubeIframe.url()}`)
 						})
 				}
 			})
-			await pages[1].close()
+			await videoWindow.close()
 			await page.waitFor(3000)
 			updateLastActivity(account.id)
 			clickableAds = await checkClickableAds(page)
@@ -126,8 +127,8 @@ async function clickAds(page, browser) {
 		} catch (err) {
 			log(`Error happened in clickAds ${err.message}`)
 			updateLastActivity(account.id)
-			if (pages[1]) {
-				await pages[1].close()
+			if (videoWindow) {
+				await videoWindow.close()
 			}
 			clickableAds = await checkClickableAds(page)
 		}

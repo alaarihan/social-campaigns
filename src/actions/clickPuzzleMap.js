@@ -7,8 +7,8 @@ const clickPuzzleMap = async function(page, where) {
 	}
 	const shapes = await recognizeShapes(page, where)
 	console.log('shapes', shapes)
-	if (!shapes || !shapes.sameShapesIndexes) {
-		log('recognizing shapes has failed!', 'ERROR')
+	if (!shapes || !shapes.sameShapesIndexes || shapes.sameShapesIndexes.length < 1) {
+		log('no similar recognizing shapes has found!', 'ERROR')
 		return false
 	}
 	log(`Click Puzzle in ${where}`)
