@@ -68,14 +68,14 @@ async function clickAds(page, browser) {
 				if (currentCounterNumber === 0) {
 					log('The video is not playing!')
 				} else {
-					let repeateTimes = false
+					let repeatTimes = false
 					if (seconds < counterNumber) {
-						repeateTimes = Math.ceil(counterNumber / seconds) - 1
-                                                if( repeatTimes  > 100){
-                                                    repeatTimes = 1
-                                                }
+						repeatTimes = Math.ceil(counterNumber / seconds) - 1
+						if( repeatTimes  > 100){
+							repeatTimes = 1
+						}
 						await videoWindow.waitFor(seconds * 1000)
-						for (let index = 0; index < repeateTimes; index++) {
+						for (let index = 0; index < repeatTimes; index++) {
 							try {
 								await youtubeIframe.waitForSelector('.ytp-play-button')
 								log(`Click replay #${index + 1}`)
