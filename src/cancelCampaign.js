@@ -3,6 +3,7 @@ const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
+const getLikeCampaigns = require('./apiQueries/getLikeCampaigns')
 const {
 	login,
 	removeCampaignLink,
@@ -14,15 +15,14 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const cancelCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts({
-			like_campaigns: {
-				status: { _eq: 'ACTIVE' },
-				user_compaign_id: { _eq: campaign.id }
-			}
+		const likeCampaigns = await getLikeCampaigns({
+			status: { _eq: 'ACTIVE' },
+			user_compaign_id: { _eq: campaign.id }
 		})
-		if (accounts.length < 1) return false
+		if (likeCampaigns.length < 1) return false
 		let loginBlockedUsersIds = []
-		for (let index = 0; index < accounts.length; index++) {
+		for (let index = 0; index < likeCampaigns.length; index++) {
+			const likeCampaignAccount = likeCampaigns[index].account
 			browser = await puppeteer.launch({
 				headless: runMode,
 				defaultViewport: null,
@@ -35,43 +35,57 @@ const cancelCampaign = async function(campaign) {
 				return false
 			}
 			try {
-				await login(page, accounts[index], false)
+				await login(page, likeCampaignAccount, false)
 			} catch (err) {
-				loginBlockedUsersIds.push(accounts[index].id)
+				loginBlockedUsersIds.push(likeCampaignAccount.id)
 				await browser.close()
 				continue
 			}
 
-			log('Going to manage pages')
-			await page.goto('https://www.like4like.org/user/manage-pages.php')
-			await page.waitFor(2000)
-			await checkIfBonustoClickPuzzle(
-				page,
-				'https://www.like4like.org/user/manage-pages.php'
-			)
+			try {
+				log('Going to manage pages')
+				await page.goto('https://www.like4like.org/user/manage-pages.php')
+				await page.waitFor(2000)
+				await checkIfBonustoClickPuzzle(
+					page,
+					'https://www.like4like.org/user/manage-pages.php'
+				)
 
-			// Remove everything after the video ID ( because like4 site does that)
-			let campaignLink =
-				campaign.link.indexOf('&') !== -1
-					? campaign.link.substring(0, campaign.link.indexOf('&'))
-					: campaign.link
-			if (campaign.type.startsWith('YOUTUBE')) {
-				campaignLink = getStandardYoutubeUrl(campaign.link)
+				// Remove everything after the video ID ( because like4 site does that)
+				let campaignLink =
+					campaign.link.indexOf('&') !== -1
+						? campaign.link.substring(0, campaign.link.indexOf('&'))
+						: campaign.link
+				if (campaign.type.startsWith('YOUTUBE')) {
+					campaignLink = getStandardYoutubeUrl(campaign.link)
+				}
+				let campaignPageTitle = getCampaignPageTitle(campaign.type)
+				await page
+					.waitForSelector(`a[title="${campaignPageTitle}"]`, {
+						timeout: 7000
+					})
+					.catch(async error => {
+						log(
+							`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
+						)
+					})
+				await page.click(`a[title="${campaignPageTitle}"]`)
+				await page.waitForSelector('#add-facebook', { timeout: 7000 })
+				await removeCampaignLink(page, campaignLink)
+				await browser.close()
+				let likeCampaignStatus = 'CANCELED'
+				if (likeCampaigns[index].status === 'COMPLETED') {
+					likeCampaignStatus = 'REMOVED'
+				} else if (loginBlockedUsersIds.includes(likeCampaignAccount.id)) {
+					likeCampaignStatus = 'TO_BE_REMOVED'
+				}
+				await updateLikeCampaign(likeCampaigns[index].id, {
+					status: likeCampaignStatus
+				})
+			} catch (err) {
+				log(`Couldn't remove like camapign ${err.message}`)
+				await browser.close()
 			}
-			let campaignPageTitle = getCampaignPageTitle(campaign.type)
-			await page
-				.waitForSelector(`a[title="${campaignPageTitle}"]`, {
-					timeout: 7000
-				})
-				.catch(async error => {
-					log(
-						`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
-					)
-				})
-			await page.click(`a[title="${campaignPageTitle}"]`)
-			await page.waitForSelector('#add-facebook', { timeout: 7000 })
-			await removeCampaignLink(page, campaignLink)
-			await browser.close()
 		}
 
 		let userCampaignStatus = 'CANCELED'
@@ -91,28 +105,8 @@ const cancelCampaign = async function(campaign) {
 			repeated: userCampaignRepeated,
 			progress: userCampaignProgress
 		})
-		let likeCampaignStatus = 'CANCELED'
-		const updatedUserCampaignLikeCampaigns = updatedUserCampaign.like_campaigns
-		for (
-			let index = 0;
-			index < updatedUserCampaignLikeCampaigns.length;
-			index++
-		) {
-			if (updatedUserCampaignLikeCampaigns[index].status === 'COMPLETED') {
-				likeCampaignStatus = 'REMOVED'
-			} else if (
-				loginBlockedUsersIds.includes(
-					updatedUserCampaignLikeCampaigns[index].account_id
-				)
-			) {
-				likeCampaignStatus = 'TO_BE_REMOVED'
-			}
-			await updateLikeCampaign(updatedUserCampaignLikeCampaigns[index].id, {
-				status: likeCampaignStatus
-			})
-		}
 		log('Done!')
-		return updatedUserCampaignLikeCampaigns
+		return updatedUserCampaign.like_campaigns
 	} catch (err) {
 		if (browser) {
 			await browser.close()

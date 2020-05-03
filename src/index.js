@@ -89,7 +89,7 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 		return next(ExpressError(400, canceledCampaigns.message))
 	}
 
-	res.send(canceledCampaigns)
+	res.send(JSON.stringify(canceledCampaigns))
 })
 
 app.post('/run/updateCampaignProgress', async function(req, res, next) {
@@ -120,7 +120,7 @@ app.get('/run/cleanDB', async function(req, res, next) {
 	}
 	let keep_logs_hours = await getSetting('keep_logs_hours')
 	let beforeDate = new Date()
-	beforeDate.setMinutes(beforeDate.getMinutes() - (keep_logs_hours * 60))
+	beforeDate.setMinutes(beforeDate.getMinutes() - keep_logs_hours * 60)
 	const deletedRows = await deleteLogs({ created_at: { _lt: beforeDate } })
 	res.send(JSON.stringify(deletedRows))
 })

@@ -16,7 +16,7 @@ const removeCampaignLink = async function(page, link) {
 		.catch(error => {
 			log(error.message)
 		})
-	await page.waitFor(2000)
+	await page.waitFor(5000)
 	await page
 		.evaluate(link => {
 			var selectorID = jQuery(
@@ -31,7 +31,7 @@ const removeCampaignLink = async function(page, link) {
 		.catch(error => {
 			log(error.message)
 		})
-	await page.waitFor(2000)
+	await page.waitFor(5000)
 }
 
 module.exports = removeCampaignLink

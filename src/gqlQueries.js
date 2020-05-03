@@ -86,6 +86,22 @@ const gqlQueries = {
         }
     }
   }`,
+	getLikeCampaignsQuery: `query like_campaign($order_by: [like_campaign_order_by!], $where: like_campaign_bool_exp){
+    like_campaign(order_by: $order_by, where: $where) {
+      id
+      account_id
+      progress
+      limit
+      status
+      account{
+        id
+        username
+        password
+        status
+        credit
+      }      
+    }
+  }`,
 	getSettings: `query setting($order_by: [setting_order_by!], $where: setting_bool_exp){
     setting(order_by: $order_by, where: $where) {
       id

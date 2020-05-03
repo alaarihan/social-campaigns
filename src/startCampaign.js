@@ -100,9 +100,8 @@ const startCampaign = async function(campaign) {
 			if (errorText === 'Link is already enter') {
 				if (likeCampaign.overwrite === 'yes') {
 					await removeCampaignLink(page, likeCampaign.link)
-					await page.waitFor(1000)
 					await page.click('input[name="add-facebook-button"]')
-					await page.waitFor(2000)
+					await page.waitFor(5000)
 				} else {
 					continue
 				}
@@ -124,7 +123,20 @@ const startCampaign = async function(campaign) {
 				// 		log(error.message)
 				// 	})
 			}
-			await page.waitFor(2000)
+			const createdLikeCampaign = await createLikeCampaign({
+				name: `#${index + 1} for user campaign #${campaign.id} in account ${
+					accounts[index].username
+				}`,
+				limit: Math.ceil(
+					parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
+				),
+				user_compaign_id: campaign.id,
+				account_id: accounts[index].id,
+				status: 'ACTIVE',
+				type: campaign.type,
+				cost_per_one: campaign.cost_per_one
+			})
+			createdLikeCampaigns.push(createdLikeCampaign)
 			const linkId = await page
 				.evaluate(likeCampaign => {
 					var selectorID = jQuery(
@@ -154,14 +166,14 @@ const startCampaign = async function(campaign) {
 				.catch(error => {
 					log(error.message)
 				})
-			await page.waitFor(1000)
+			await page.waitFor(3000)
 			log('Type limit number and save')
 			await page.type(
 				'input[name="Total Credits"]',
 				likeCampaign.limit.toString()
 			)
 			await page.click(`#credit-limit-list-${linkId} a[title="Save Changes"]`)
-			await page.waitFor(2000)
+			await page.waitFor(3000)
 			log('Activate campaign')
 			await page
 				.evaluate(
@@ -184,20 +196,7 @@ const startCampaign = async function(campaign) {
 				})
 			totalCampaingnsTarget +=
 				parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
-			const createdLikeCampaign = await createLikeCampaign({
-				name: `#${index + 1} for user campaign #${campaign.id} in account ${
-					accounts[index].username
-				}`,
-				limit: Math.ceil(
-					parseInt(campagnLimit) / parseInt(campaign.cost_per_one)
-				),
-				user_compaign_id: campaign.id,
-				account_id: accounts[index].id,
-				status: 'ACTIVE',
-				type: campaign.type,
-				cost_per_one: campaign.cost_per_one
-			})
-			createdLikeCampaigns.push(createdLikeCampaign)
+
 			if (totalCampaingnsTarget >= parseInt(campaign.target)) {
 				updateUserCampaign(campaign.id, { status: 'ACTIVE' })
 				await browser.close()
@@ -219,6 +218,7 @@ const startCampaign = async function(campaign) {
 		if (browser) {
 			await browser.close()
 		}
+		updateUserCampaign(campaign.id, { status: 'CANCEL' })
 		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')
 		return err
 	}
