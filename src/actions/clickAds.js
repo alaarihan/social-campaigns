@@ -71,6 +71,9 @@ async function clickAds(page, browser) {
 					let repeateTimes = false
 					if (seconds < counterNumber) {
 						repeateTimes = Math.ceil(counterNumber / seconds) - 1
+                                                if( repeatTimes  > 100){
+                                                    repeatTimes = 1
+                                                }
 						await videoWindow.waitFor(seconds * 1000)
 						for (let index = 0; index < repeateTimes; index++) {
 							try {
