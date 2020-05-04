@@ -14,7 +14,7 @@ async function clickAds(page, browser) {
 	}
 	const account = await getCurrentAccount()
 	let clickAdsloop = 1
-	while (clickableAds > 0) {
+	while (clickableAds > 0 && clickAdsloop < 1000) {
 		const earning_enabled = await getSetting('enable_earning')
 		if (earning_enabled !== 'yes') {
 			throw new Error(`Can't run earning because it's disabled`)
@@ -25,9 +25,17 @@ async function clickAds(page, browser) {
 		await page.waitFor(2000)
 		const pages = await browser.pages()
 		const videoWindow = pages[1]
+		if (!videoWindow) {
+			throw new Error('Video window has not found!')
+		}
 		try {
 			await videoWindow.waitForSelector('iframe')
 			const parentIframe = await videoWindow.frames()[1]
+			if (!parentIframe) {
+				log('videoWindow parent frame has not found!')
+				videoWindow.close()
+				continue
+			}
 			await parentIframe.waitForSelector('#player')
 			let counterText = await parentIframe.evaluate(
 				() => document.querySelector('#counter').parentElement.innerText
