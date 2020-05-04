@@ -15,17 +15,17 @@ async function clickAds(page, browser) {
 	const account = await getCurrentAccount()
 	let clickAdsloop = 1
 	while (clickableAds > 0) {
+		const earning_enabled = await getSetting('enable_earning')
+		if (earning_enabled !== 'yes') {
+			throw new Error(`Can't run earning because it's disabled`)
+		}
+		log(`Click to view new video #${clickAdsloop}`)
+		clickAdsloop++
+		await page.click('.earn_pages_button:first-child')
+		await page.waitFor(2000)
+		const pages = await browser.pages()
+		const videoWindow = pages[1]
 		try {
-			const earning_enabled = await getSetting('enable_earning')
-			if (earning_enabled !== 'yes') {
-				throw new Error(`Can't run earning because it's disabled`)
-			}
-			log(`Click to view new video #${clickAdsloop}`)
-			clickAdsloop++
-			await page.click('.earn_pages_button:first-child')
-			await page.waitFor(2000)
-			const pages = await browser.pages()
-			const videoWindow = pages[1]
 			await videoWindow.waitForSelector('iframe')
 			const parentIframe = await videoWindow.frames()[1]
 			await parentIframe.waitForSelector('#player')
