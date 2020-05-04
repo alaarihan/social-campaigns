@@ -101,7 +101,8 @@ const startEarning = async function(force) {
 			})
 		await updateCredit(page, account, false)
 		let earning_loop_number = await getSetting('earning_loop_number')
-		if (!earning_loop_number || !earning_loop_number) {
+		earning_loop_number = parseInt(earning_loop_number)
+		if (!earning_loop_number) {
 			earning_loop_number = 3
 		}
 		log(`Start the loop ${earning_loop_number} total`)
@@ -154,7 +155,9 @@ const startEarning = async function(force) {
 				}
 			}
 		}
-		await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+		if(earning_loop_number-1 !== index){
+			await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
+		}
 		await updateCredit(page, account)
 
 		await browser.close()
