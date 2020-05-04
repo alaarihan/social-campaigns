@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer')
-const getAccounts = require('./apiQueries/getAccounts')
 const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')

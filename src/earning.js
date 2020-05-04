@@ -155,10 +155,6 @@ const startEarning = async function(force) {
 				}
 			}
 		}
-		if (earning_loop_number - 1 !== index) {
-			await page.goto('https://www.like4like.org/user/earn-youtube-video.php')
-		}
-		await updateCredit(page, account)
 
 		await browser.close()
 		changeAccountStatus(account.id, 'DONE', 3 * 60)
