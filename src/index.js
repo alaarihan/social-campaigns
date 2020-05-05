@@ -73,13 +73,7 @@ app.post('/run/cancelCampaign', async function(req, res, next) {
 	const campaign = req.body.event.data.new
 
 	let canceledCampaigns = null
-	if (
-		campaign.status === 'CANCEL' ||
-		(campaign.status === 'COMPLETED' &&
-			campaign.repeat !== 0 &&
-			campaign.repeat > campaign.repeated) ||
-		(campaign.status === 'COMPLETED' && campaign.repeat === -1)
-	) {
+	if (campaign.status === 'CANCEL' || campaign.status === 'COMPLETED') {
 		canceledCampaigns = await cancelCampaign(campaign)
 	} else {
 		return res.send('Nothing to do!')

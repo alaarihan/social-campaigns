@@ -15,7 +15,7 @@ var browser = null
 const cancelCampaign = async function(campaign) {
 	try {
 		const likeCampaigns = await getLikeCampaigns({
-			status: { _eq: 'ACTIVE' },
+			status: { _in: ['ACTIVE', 'COMPLETED'] },
 			user_compaign_id: { _eq: campaign.id }
 		})
 		if (likeCampaigns.length < 1) return false
@@ -87,9 +87,15 @@ const cancelCampaign = async function(campaign) {
 			}
 		}
 
-		let userCampaignStatus = 'CANCELED'
+		let userCampaignStatus = 'COMPLETED'
 		let userCampaignRepeated = campaign.repeated
 		let userCampaignProgress = campaign.progress
+		if (
+			campaign.status === 'COMPLETED' &&
+			userCampaignProgress < campaign.target
+		) {
+			userCampaignStatus = 'CANCELED'
+		}
 		if (
 			campaign.status === 'COMPLETED' &&
 			(campaign.repeat === -1 ||
