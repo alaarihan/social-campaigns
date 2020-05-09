@@ -18,7 +18,6 @@ const cancelCampaign = async function(campaign) {
 			status: { _in: ['ACTIVE', 'COMPLETED'] },
 			user_compaign_id: { _eq: campaign.id }
 		})
-		if (likeCampaigns.length < 1) return false
 		let loginBlockedUsersIds = []
 		for (let index = 0; index < likeCampaigns.length; index++) {
 			const likeCampaignAccount = likeCampaigns[index].account
@@ -91,15 +90,17 @@ const cancelCampaign = async function(campaign) {
 		let userCampaignRepeated = campaign.repeated
 		let userCampaignProgress = campaign.progress
 		if (
-			campaign.status === 'COMPLETED' &&
-			userCampaignProgress < campaign.target
+			campaign.status === 'CANCEL' ||
+			(campaign.status === 'COMPLETED' &&
+				userCampaignProgress < campaign.target)
 		) {
 			userCampaignStatus = 'CANCELED'
 		}
 		if (
-			campaign.status === 'COMPLETED' &&
-			(campaign.repeat === -1 ||
-				(campaign.repeat > 0 && campaign.repeat > campaign.repeated))
+			campaign.status === 'RESTART' ||
+			(campaign.status === 'COMPLETED' &&
+				(campaign.repeat === -1 ||
+					(campaign.repeat > 0 && campaign.repeat > campaign.repeated)))
 		) {
 			userCampaignStatus = 'PENDING'
 			userCampaignRepeated = campaign.repeated + 1

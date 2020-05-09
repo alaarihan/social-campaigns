@@ -218,7 +218,7 @@ const startCampaign = async function(campaign) {
 		if (browser) {
 			await browser.close()
 		}
-		updateUserCampaign(campaign.id, { status: 'CANCEL' })
+		updateUserCampaign(campaign.id, { status: 'RESTART' })
 		log(`Error happened in startCampaign! ${err.message}`, 'ERROR')
 		return err
 	}
