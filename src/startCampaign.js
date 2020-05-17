@@ -213,7 +213,7 @@ const startCampaign = async function(campaign) {
 					createdLikeCampaigns.length + activeCampaignAccountsNumber >=
 						parseInt(campaign.accounts_number))
 			) {
-				updateUserCampaign(campaign.id, { status: 'ACTIVE' })
+				await updateUserCampaign(campaign.id, { status: 'ACTIVE' })
 				await browser.close()
 				break
 			} else {

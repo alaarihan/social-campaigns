@@ -52,7 +52,10 @@ const gqlQueries = {
 	getCampaigns: `query campaign($order_by: [campaign_order_by!], $where: campaign_bool_exp){
     campaign(order_by: $order_by, where: $where) {
       id
+      limited
+      accounts_number
       target
+      cost_per_one
       progress
       status
       link
