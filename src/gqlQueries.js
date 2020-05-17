@@ -9,6 +9,7 @@ const gqlQueries = {
       credit
       available_credit
       status_duration
+      campaign_id
     }
   }`,
 	updateAccount: `mutation update_account($_set: account_set_input, $where: account_bool_exp!){
@@ -72,7 +73,13 @@ const gqlQueries = {
           credit
         }
       }
-      
+      accounts{
+        id
+        username
+        password
+        status
+        credit
+      }
     }
   }`,
 	updateCampaign: `mutation update_campaign($_set: campaign_set_input, $where: campaign_bool_exp!){

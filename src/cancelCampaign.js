@@ -3,6 +3,7 @@ const log = require('./apiQueries/log')
 const updateUserCampaign = require('./apiQueries/updateUserCampaign')
 const updateLikeCampaign = require('./apiQueries/updateLikeCampaign')
 const getLikeCampaigns = require('./apiQueries/getLikeCampaigns')
+const updateAccount = require('./apiQueries/updateAccount')
 const {
 	login,
 	removeCampaignLink,
@@ -64,13 +65,16 @@ const cancelCampaign = async function(campaign) {
 					})
 					.catch(async error => {
 						log(
-							`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
+							`Something wrong happened, I couldn't find "${campaignPageTitle}" link`
 						)
 					})
 				await page.click(`a[title="${campaignPageTitle}"]`)
 				await page.waitForSelector('#add-facebook', { timeout: 7000 })
 				await removeCampaignLink(page, campaignLink)
 				await browser.close()
+				if (!campaign.limited) {
+					await updateAccount(likeCampaignAccount.id, { campaign_id: null })
+				}
 				let likeCampaignStatus = 'CANCELED'
 				if (likeCampaigns[index].status === 'COMPLETED') {
 					likeCampaignStatus = 'REMOVED'

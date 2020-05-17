@@ -39,9 +39,12 @@ const updateCampaignProgress = async function(campaign) {
 			const account = likeCampaign.account
 			if (loginBlockedStatuses.includes(account.status)) {
 				log(
-					`Campaign #${campaign.id} has like campaign in account ${account.username} whtch has status ${account.status}`
+					`Campaign #${campaign.id} has like campaign in account ${account.username} which has status ${account.status}`
 				)
-				if (campaign.repeat === -1 || campaign.repeat > campaign.repeated) {
+				if (
+					campaign.limited &&
+					(campaign.repeat === -1 || campaign.repeat > campaign.repeated)
+				) {
 					log(`Complete the campaign to be repeated`)
 					const updatedUserCampaign = await updateUserCampaign(campaign.id, {
 						status: 'COMPLETED'
@@ -78,7 +81,7 @@ const updateCampaignProgress = async function(campaign) {
 				})
 				.catch(async error => {
 					log(
-						`Something wrong happened, I couldn\'t find "${campaignPageTitle}" link`
+						`Something wrong happened, I couldn't find "${campaignPageTitle}" link`
 					)
 				})
 			await page.click(`a[title="${campaignPageTitle}"]`)
@@ -104,7 +107,10 @@ const updateCampaignProgress = async function(campaign) {
 				let likeCampaignVariables = {
 					progress: parseInt(likeCampaignProgress)
 				}
-				if (parseInt(likeCampaignProgress) >= parseInt(likeCampaign.limit)) {
+				if (
+					campaign.limited &&
+					parseInt(likeCampaignProgress) >= parseInt(likeCampaign.limit)
+				) {
 					likeCampaignVariables.status = 'COMPLETED'
 				}
 				await updateLikeCampaign(likeCampaign.id, likeCampaignVariables)
@@ -115,7 +121,10 @@ const updateCampaignProgress = async function(campaign) {
 		let variables = {
 			progress: parseInt(campaignProgress)
 		}
-		if (parseInt(campaignProgress) >= parseInt(campaign.target)) {
+		if (
+			campaign.limited &&
+			parseInt(campaignProgress) >= parseInt(campaign.target)
+		) {
 			variables.status = 'COMPLETED'
 		}
 		const updatedUserCampaign = await updateUserCampaign(campaign.id, variables)

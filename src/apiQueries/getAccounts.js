@@ -4,7 +4,10 @@ const log = require('../apiQueries/log')
 
 const getAccounts = async function(where, order_by = { last_activity: 'asc' }) {
 	if (!where) {
-		where = { status: { _in: ['OFFLINE', 'ONLINE', 'DONE', 'YV_SUSPENDED'] } }
+		where = {
+			status: { _in: ['OFFLINE', 'ONLINE', 'DONE', 'YV_SUSPENDED'] },
+			campaign_id: { _is_null: true }
+		}
 	}
 	let variables = {
 		order_by,
