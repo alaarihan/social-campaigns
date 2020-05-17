@@ -17,7 +17,11 @@ var runMode = process.env.HEADLESS === 'no' ? false : true
 var browser = null
 const startCampaign = async function(campaign) {
 	try {
-		const accounts = await getAccounts(null, { credit: 'desc' })
+		const accountsWhere = {
+			status: { _in: ['OFFLINE', 'ONLINE', 'DONE', 'YV_SUSPENDED'] },
+			campaign_id: { _is_null: true }
+		}
+		const accounts = await getAccounts(accountsWhere, { credit: 'desc' })
 		if (accounts.length < 1) return false
 		let activeCampaignAccountsNumber = 0
 		if (!campaign.limited) {
