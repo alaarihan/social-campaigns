@@ -1,0 +1,20 @@
+type Mutation {
+  login (
+    email: String!
+    password: String!
+  ): LoginPayload
+}
+
+
+type Mutation {
+  refresh_token : LoginPayload
+}
+
+
+
+
+type LoginPayload {
+  jwt_token : String!
+  jwt_expires_in : Int!
+}
+

@@ -1,5 +1,3 @@
-version: 2
-tables:
 - table:
     schema: public
     name: account
@@ -34,6 +32,14 @@ tables:
     using:
       foreign_key_constraint_on: user_id
   array_relationships:
+  - name: accounts
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: account
+        column_mapping:
+          id: campaign_id
   - name: like_campaigns
     using:
       foreign_key_constraint_on:
@@ -50,7 +56,7 @@ tables:
         - status
     retry_conf:
       num_retries: 0
-      interval_sec: 10
+      interval_sec: 300
       timeout_sec: 600
     webhook: https://social-campaigns-run.herokuapp.com/run/cancelCampaign
     headers:
@@ -66,7 +72,7 @@ tables:
         - status
     retry_conf:
       num_retries: 0
-      interval_sec: 30
+      interval_sec: 300
       timeout_sec: 600
     webhook: https://social-campaigns-run.herokuapp.com/run/startCampaign
     headers:
@@ -108,31 +114,3 @@ tables:
       filter:
         id:
           _eq: X-Hasura-User-Id
-actions:
-- name: login
-  definition:
-    kind: synchronous
-    handler: https://future-bedecked-cause.glitch.me/login
-    arguments:
-    - name: username
-      type: String!
-    - name: password
-      type: String!
-    output_type: LoginPayload
-    forward_client_headers: true
-custom_types:
-  objects:
-  - name: LoginPayload
-    fields:
-    - name: accessToken
-      type: String!
-    - name: userId
-      type: Int!
-    relationships:
-    - remote_table:
-        schema: public
-        name: user
-      name: user
-      type: object
-      field_mapping:
-        userId: id
