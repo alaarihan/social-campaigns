@@ -13,6 +13,7 @@ const updateCampaignProgress = async function(campaign) {
 	try {
 		if (!campaign.like_campaigns) {
 			campaign = await getUserCampaignById(campaign.id)
+			if (!campaign || !campaign.like_campaigns) return
 		}
 		if (campaign.like_campaigns.length < 1) return false
 		let campaignLink =
@@ -27,8 +28,9 @@ const updateCampaignProgress = async function(campaign) {
 		for (let index = 0; index < campaign.like_campaigns.length; index++) {
 			const likeCampaign = campaign.like_campaigns[index]
 			if (
-				likeCampaign.status !== 'ACTIVE' &&
-				likeCampaign.status !== 'COMPLETED'
+				!likeCampaign ||
+				(likeCampaign.status !== 'ACTIVE' &&
+					likeCampaign.status !== 'COMPLETED')
 			) {
 				continue
 			}
